@@ -27,37 +27,45 @@ export const portfolio = {
   title: "Electronics, Automation & Robotics Student",
   headline: "Engineering ideas into systems that work.",
   heroText:
-    "I am an Electrical and Computer Engineering student focused on electronics, automation, robotics, and technology-driven problem-solving.",
+    "Electrical and Computer Engineering student focused on electronics, automation, robotics, and practical technology-driven problem-solving.",
   about: {
+    statement:
+      "I am interested in the point where information becomes action.",
     intro:
-      "I study the systems behind modern technology—from sensors and processors to automation and robotics—and how their individual parts become useful, reliable solutions.",
-    philosophy:
-      "Volunteering, entrepreneurship, and communication have taught me to connect technical thinking with people, context, and practical impact.",
+      "From the way sensors collect information to how processors interpret it, I want to understand how complete technical systems work—not only their individual parts.",
+    perspective:
+      "Volunteering, entrepreneurship, communication, and event organization complement my technical education with a practical, people-focused perspective.",
   },
   focusAreas: [
     {
       title: "Electronics",
-      description: "Developing knowledge of components, circuits, and practical electronic systems.",
+      description:
+        "Understanding components, circuits, and the hardware that makes modern systems possible.",
     },
     {
       title: "Automation",
-      description: "Exploring how control logic can make processes more consistent and useful.",
+      description:
+        "Exploring how control logic turns repeatable processes into reliable outcomes.",
     },
     {
       title: "Robotics",
-      description: "Interested in the intersection of mechanics, electronics, and intelligent control.",
+      description:
+        "Connecting mechanics, electronics, sensing, and control into purposeful machines.",
     },
     {
       title: "Sensors & hardware",
-      description: "Learning how physical signals are measured, processed, and turned into action.",
+      description:
+        "Learning how physical signals are measured, processed, and converted into action.",
     },
     {
       title: "Technology & innovation",
-      description: "Looking for grounded ways technology can improve real experiences and systems.",
+      description:
+        "Looking for grounded ways technology can improve real experiences and systems.",
     },
     {
       title: "Problem-solving",
-      description: "Breaking complex questions into clear, testable steps.",
+      description:
+        "Breaking complex questions into clear, testable, and practical steps.",
     },
   ] satisfies readonly FocusArea[],
   education: {
@@ -71,12 +79,11 @@ export const portfolio = {
       organization: "Student Initiative for Innovation",
       role: "Co-founder",
       summary:
-        "Helped shape events, proposals, and communications for an initiative that reached up to 1,300 participants.",
+        "Supported the initiative through project writing, event organization, and public communication.",
       details: [
         "Organized events and wrote project proposals.",
         "Published organizational activities and supported event communication.",
-        "Edited event video and photography.",
-        "Supported planning for events with up to 1,300 participants.",
+        "Edited video and photography from the organization’s events.",
       ],
     },
     {
@@ -84,10 +91,10 @@ export const portfolio = {
       organization: "RRITU Marketing",
       role: "Co-founder",
       summary:
-        "Supported small and medium companies with social media services, digital communication, and content presentation.",
+        "Helped offer social media services for small and medium-sized companies.",
       details: [
-        "Provided social media services for small and medium companies.",
         "Supported digital communication and content presentation.",
+        "Worked with companies on their social media presence.",
       ],
     },
     {
@@ -95,39 +102,25 @@ export const portfolio = {
       organization: "ELKOS ETC",
       role: "Household Electronics Salesperson",
       summary:
-        "Helped customers understand household electronics while developing clear product communication skills.",
+        "Helped customers understand household electronics through clear product communication.",
       details: [
         "Explained products including televisions, camera systems, and electric chargers.",
         "Developed customer communication and product presentation skills.",
       ],
     },
   ] satisfies readonly Experience[],
-  metrics: [
-    { value: 1300, suffix: "+", label: "Event participants" },
-    { value: 2, suffix: "", label: "Co-founder roles" },
-    { value: 6, suffix: "", label: "Certifications & recognitions" },
-    { value: 2021, suffix: "", label: "Engineering studies since" },
-  ],
   skills: [
     {
       category: "Communication",
-      items: ["Public speaking", "Effective communication", "Client interaction"],
+      items: ["Public speaking", "Project writing"],
     },
     {
       category: "Organization",
-      items: ["Project writing", "Event planning", "Event management"],
+      items: ["Event planning and management", "Problem-solving"],
     },
     {
-      category: "Digital & Creative",
-      items: [
-        "Photography",
-        "Video/content editing",
-        "Social media management",
-      ],
-    },
-    {
-      category: "Thinking",
-      items: ["Problem-solving", "Critical thinking", "Technical curiosity"],
+      category: "Creative & digital",
+      items: ["Photography", "Social media management"],
     },
   ] satisfies readonly SkillGroup[],
   certifications: [

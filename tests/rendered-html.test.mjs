@@ -33,14 +33,15 @@ test("server-renders the complete Gramoz Shala portfolio", async () => {
     html,
     /<title>Gramoz Shala — Electronics, Automation &amp; Robotics<\/title>/i,
   );
+  assert.match(html, /<h1[^>]*>Gramoz Shala<\/h1>/);
   assert.match(html, /Engineering ideas into systems that work\./);
   assert.match(html, /Student Initiative for Innovation/);
   assert.match(html, /Faculty of Electrical and Computer Engineering/);
-  assert.match(html, /Certifications &amp; recognition/i);
+  assert.match(html, /Learning beyond the lecture hall\./i);
   assert.match(html, /gramozshala03@gmail\.com/);
   assert.match(html, /tel:\+38348570674/);
   assert.match(html, /application\/ld\+json/);
-  assert.match(html, /og-social\.png/);
+  assert.match(html, /og\.png/);
   assert.doesNotMatch(html, /codex-preview|Your site is taking shape|lorem ipsum/i);
 });
 
@@ -58,8 +59,10 @@ test("keeps portfolio content typed and accessibility safeguards in source", asy
   assert.match(layout, /generateMetadata/);
   assert.match(layout, /localStorage\.getItem\("gramoz-theme"\)/);
   assert.match(client, /className="skip-link"/);
+  assert.match(client, /aria-modal="true"/);
+  assert.match(client, /aria-expanded=\{isOpen\}/);
   assert.match(client, /aria-live="polite"/);
-  assert.match(client, /prefers-reduced-motion: reduce/);
+  assert.match(client, /event\.key === "Escape"/);
   assert.match(data, /satisfies readonly Experience\[\]/);
   assert.match(data, /Volunteer of the Year 2019/);
   assert.match(css, /prefers-reduced-motion:\s*reduce/);

@@ -29,7 +29,7 @@ export async function generateMetadata(): Promise<Metadata> {
       siteName: "Gramoz Shala",
       images: [
         {
-          url: "/og-social.png",
+          url: "/og.png",
           width: 1200,
           height: 630,
           alt: "Gramoz Shala — Electronics, Automation & Robotics",
@@ -40,7 +40,7 @@ export async function generateMetadata(): Promise<Metadata> {
       card: "summary_large_image",
       title,
       description,
-      images: ["/og-social.png"],
+      images: ["/og.png"],
     },
     icons: {
       icon: "/favicon.svg",
