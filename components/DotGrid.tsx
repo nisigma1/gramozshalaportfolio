@@ -90,9 +90,13 @@ export function DotGrid({
     };
 
     const updatePointer = (event: PointerEvent) => {
-      const rect = canvas.getBoundingClientRect();
+      const rect = wrapper.getBoundingClientRect();
       pointerX = event.clientX - rect.left;
       pointerY = event.clientY - rect.top;
+      if (pointerX < 0 || pointerY < 0 || pointerX > rect.width || pointerY > rect.height) {
+        clearPointer();
+        return;
+      }
       for (const dot of dots) {
         const distance = Math.hypot(dot.x - pointerX, dot.y - pointerY);
         if (distance < proximity) {
@@ -103,18 +107,31 @@ export function DotGrid({
         }
       }
     };
+    const triggerPulse = (event: PointerEvent) => {
+      updatePointer(event);
+      if (pointerX < 0 || pointerY < 0) return;
+      for (const dot of dots) {
+        const distance = Math.hypot(dot.x - pointerX, dot.y - pointerY);
+        if (distance < proximity * 1.8) {
+          const falloff = 1 - distance / (proximity * 1.8);
+          const angle = Math.atan2(dot.y - pointerY, dot.x - pointerX);
+          dot.velocityX += Math.cos(angle) * falloff * 7;
+          dot.velocityY += Math.sin(angle) * falloff * 7;
+        }
+      }
+    };
     const clearPointer = () => { pointerX = -1000; pointerY = -1000; };
     const observer = new ResizeObserver(resize);
     observer.observe(wrapper);
     resize();
     draw();
-    wrapper.addEventListener("pointermove", updatePointer, { passive: true });
-    wrapper.addEventListener("pointerleave", clearPointer, { passive: true });
+    window.addEventListener("pointermove", updatePointer, { passive: true });
+    window.addEventListener("pointerdown", triggerPulse, { passive: true });
     return () => {
       cancelAnimationFrame(frame);
       observer.disconnect();
-      wrapper.removeEventListener("pointermove", updatePointer);
-      wrapper.removeEventListener("pointerleave", clearPointer);
+      window.removeEventListener("pointermove", updatePointer);
+      window.removeEventListener("pointerdown", triggerPulse);
     };
   }, [activeColor, baseColor, dotSize, gap, proximity]);
 
