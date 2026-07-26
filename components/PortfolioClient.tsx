@@ -12,6 +12,7 @@ import {
   ImpactMetrics,
   Navigation,
 } from "@/components/PortfolioInteractions";
+import { ParticleTypography } from "@/components/ParticleTypography";
 import { portfolio } from "@/data/portfolio";
 
 function SectionLabel({
@@ -81,6 +82,7 @@ function MaleraSection() {
             </a>
           </div>
           <div className="malera-services" aria-label="Malera Studio services">
+            <ParticleTypography text="MALERA" />
             <p className="malera-services-label">What the studio makes</p>
             <ul>
               {portfolio.studio.services.map((service, index) => (

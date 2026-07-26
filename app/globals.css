@@ -975,6 +975,20 @@ ul {
   border-top: 1px solid var(--line-strong);
 }
 
+.particle-type {
+  height: clamp(8rem, 22vw, 13rem);
+  margin-bottom: 0.5rem;
+  overflow: hidden;
+  color: var(--accent);
+  pointer-events: auto;
+}
+
+.particle-type canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
 .malera-services-label { padding-block: 1rem; color: var(--muted); }
 .malera-services ul { margin: 0; padding: 0; list-style: none; }
 .malera-services li {
