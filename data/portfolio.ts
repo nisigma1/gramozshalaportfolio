@@ -29,6 +29,13 @@ export type Certification = {
   type: "Training" | "Recognition";
 };
 
+export type Studio = {
+  name: string;
+  url: string;
+  description: string;
+  services: readonly string[];
+};
+
 export const portfolio = {
   name: "Gramoz Shala",
   title: "Electronics, Automation & Robotics Student",
@@ -136,6 +143,13 @@ export const portfolio = {
       label: "engineering studies",
     },
   ] satisfies readonly ImpactMetric[],
+  studio: {
+    name: "Malera Studio",
+    url: "https://malera.studio/",
+    description:
+      "Alongside his engineering studies, Gramoz is building a creative studio focused on useful, well-made digital work.",
+    services: ["Websites", "Mobile apps", "Video content", "AI tools"],
+  } satisfies Studio,
   skills: [
     {
       category: "Communication",

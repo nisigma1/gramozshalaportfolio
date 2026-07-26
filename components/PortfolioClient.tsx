@@ -4,6 +4,7 @@ import {
   ArrowDownRight,
   ArrowRight,
   ArrowUp,
+  ArrowUpRight,
   Check,
   ChevronDown,
   Copy,
@@ -403,6 +404,38 @@ function ImpactMetrics() {
   );
 }
 
+function StudioFeature() {
+  return (
+    <section className="studio-section" aria-labelledby="studio-heading">
+      <div className="page-shell studio-layout">
+        <div className="studio-intro">
+          <SectionLabel>Company</SectionLabel>
+          <p>Digital products, built from Kosovo.</p>
+        </div>
+        <div className="studio-content">
+          <h2 id="studio-heading">{portfolio.studio.name}</h2>
+          <p>{portfolio.studio.description}</p>
+          <ul aria-label="Malera Studio services">
+            {portfolio.studio.services.map((service) => (
+              <li key={service}>{service}</li>
+            ))}
+          </ul>
+          <a
+            className="studio-link"
+            href={portfolio.studio.url}
+            target="_blank"
+            rel="noreferrer"
+            aria-label={`Visit ${portfolio.studio.name} (opens in a new tab)`}
+          >
+            <span>Visit Malera</span>
+            <ArrowUpRight aria-hidden="true" size={22} strokeWidth={1.8} />
+          </a>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function CertificationArchive() {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
@@ -686,6 +719,8 @@ export default function PortfolioClient() {
         </section>
 
         <ImpactMetrics />
+
+        <StudioFeature />
 
         <section className="section skills-section" id="skills" aria-labelledby="skills-heading">
           <div className="page-shell">
