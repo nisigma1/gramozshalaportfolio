@@ -20,6 +20,7 @@ const navigation = [
   { id: "about", label: "About" },
   { id: "focus", label: "Focus" },
   { id: "experience", label: "Experience" },
+  { id: "malera", label: "Malera Studio" },
   { id: "skills", label: "Skills" },
   { id: "certifications", label: "Certifications" },
   { id: "contact", label: "Contact" },

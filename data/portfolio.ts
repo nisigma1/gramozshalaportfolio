@@ -32,6 +32,10 @@ export type Certification = {
 export type Studio = {
   name: string;
   url: string;
+  eyebrow: string;
+  headline: string;
+  description: string;
+  services: readonly string[];
 };
 
 export const portfolio = {
@@ -144,6 +148,16 @@ export const portfolio = {
   studio: {
     name: "Malera Studio",
     url: "https://malera.studio/",
+    eyebrow: "A digital studio from Kosovo",
+    headline: "Websites, apps, and AI tools built with purpose.",
+    description:
+      "Alongside his engineering studies, Gramoz is building Malera Studio — a small digital studio creating websites, mobile apps, video content, and AI automation.",
+    services: [
+      "Web development",
+      "Mobile apps",
+      "Video production",
+      "AI bots & automation",
+    ],
   } satisfies Studio,
   skills: [
     {

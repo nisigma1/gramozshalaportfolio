@@ -56,28 +56,45 @@ function FocusSystem() {
   );
 }
 
-function StudioCredit() {
+function MaleraSection() {
   return (
-    <aside
-      className="studio-credit"
-      id="studio-credit"
-      aria-label="Portfolio design credit"
-    >
+    <section className="malera-section" id="malera" aria-labelledby="malera-heading">
       <div className="page-shell">
-        <p>
-          Designed &amp; built by
-          <a
-            href={portfolio.studio.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label={`${portfolio.studio.name}, opens in a new tab`}
-          >
-            <span>{portfolio.studio.name}</span>
-            <ArrowUpRight aria-hidden="true" size={16} strokeWidth={1.8} />
-          </a>
-        </p>
+        <div className="malera-heading-row">
+          <SectionLabel>{portfolio.studio.eyebrow}</SectionLabel>
+          <span className="malera-index" aria-hidden="true">04</span>
+        </div>
+        <div className="malera-layout">
+          <div className="malera-copy">
+            <p className="malera-kicker">Malera Studio</p>
+            <h2 id="malera-heading">{portfolio.studio.headline}</h2>
+            <p className="malera-description">{portfolio.studio.description}</p>
+            <a
+              className="button button-primary malera-cta"
+              href={portfolio.studio.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={`Visit ${portfolio.studio.name}, opens in a new tab`}
+            >
+              Visit Malera Studio
+              <ArrowUpRight aria-hidden="true" size={18} strokeWidth={1.8} />
+            </a>
+          </div>
+          <div className="malera-services" aria-label="Malera Studio services">
+            <p className="malera-services-label">What the studio makes</p>
+            <ul>
+              {portfolio.studio.services.map((service, index) => (
+                <li key={service}>
+                  <span aria-hidden="true">0{index + 1}</span>
+                  <strong>{service}</strong>
+                  <ArrowRight aria-hidden="true" size={16} strokeWidth={1.7} />
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
       </div>
-    </aside>
+    </section>
   );
 }
 
@@ -232,7 +249,7 @@ export default function PortfolioClient() {
           </div>
         </section>
 
-        <StudioCredit />
+        <MaleraSection />
 
         <ImpactMetrics />
 

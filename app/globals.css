@@ -360,7 +360,7 @@ ul {
 .section,
 .languages-section,
 .impact-section,
-.studio-credit,
+.malera-section,
 .contact-section,
 .site-footer {
   content-visibility: auto;
@@ -919,42 +919,80 @@ ul {
   line-height: 0.95;
 }
 
-.studio-credit {
-  padding-block: 1.15rem;
-  border-top: 1px solid var(--line);
-  border-bottom: 1px solid var(--line);
+.malera-section {
+  padding-block: 5rem;
   background: var(--surface);
+  border-block: 1px solid var(--line);
 }
 
-.studio-credit p,
-.studio-credit a {
-  display: inline-flex;
+.malera-heading-row {
+  display: flex;
   align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 2.75rem;
 }
 
-.studio-credit p {
-  gap: 0.35rem;
+.malera-heading-row .section-label { margin: 0; }
+.malera-index,
+.malera-kicker,
+.malera-services-label {
+  color: var(--accent);
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.malera-index { color: var(--subtle); }
+
+.malera-layout {
+  display: grid;
+  gap: 3rem;
+}
+
+.malera-copy { max-width: 46rem; }
+.malera-kicker { margin-bottom: 1rem; }
+.malera-copy h2 {
+  max-width: 12ch;
+  margin: 0;
+  font-size: clamp(2.55rem, 8vw, 5.8rem);
+  letter-spacing: -0.065em;
+  line-height: 0.95;
+}
+
+.malera-description {
+  max-width: 38rem;
+  margin: 1.75rem 0 2rem;
+  color: var(--muted);
+  font-size: clamp(1.05rem, 2vw, 1.25rem);
+  line-height: 1.55;
+}
+
+.malera-cta { width: fit-content; }
+.malera-services {
+  align-self: end;
+  border-top: 1px solid var(--line-strong);
+}
+
+.malera-services-label { padding-block: 1rem; color: var(--muted); }
+.malera-services ul { margin: 0; padding: 0; list-style: none; }
+.malera-services li {
+  display: grid;
+  grid-template-columns: 2rem minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.9rem;
+  min-height: 3.6rem;
+  border-top: 1px solid var(--line);
+}
+.malera-services li span {
   color: var(--subtle);
   font-family: var(--font-geist-mono), ui-monospace, monospace;
-  font-size: 0.68rem;
-  letter-spacing: 0.035em;
+  font-size: 0.7rem;
 }
-
-.studio-credit a {
-  min-height: 2.75rem;
-  gap: 0.4rem;
-  color: var(--text);
-  font-weight: 650;
-}
-
-.studio-credit svg {
-  color: var(--accent);
-  transition: transform 160ms ease;
-}
-
-.studio-credit a:hover svg {
-  transform: translate(0.12rem, -0.12rem);
-}
+.malera-services li strong { font-size: 1rem; font-weight: 600; }
+.malera-services li svg { color: var(--accent); transition: transform 160ms ease; }
+.malera-services li:hover svg { transform: translateX(0.2rem); }
 
 .skills-section {
   background: var(--surface);
@@ -1392,9 +1430,11 @@ ul {
     border-right: 1px solid var(--line);
   }
 
-  .studio-credit .page-shell {
-    display: flex;
-    justify-content: flex-end;
+  .malera-section { padding-block: 7rem; }
+  .malera-layout {
+    grid-template-columns: minmax(0, 1.15fr) minmax(18rem, 0.85fr);
+    align-items: end;
+    gap: 5rem;
   }
 
   .skills-grid {

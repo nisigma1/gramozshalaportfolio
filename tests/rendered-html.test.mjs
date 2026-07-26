@@ -42,7 +42,9 @@ test("server-renders the complete Gramoz Shala portfolio", async () => {
   assert.match(html, /gramozshala03@gmail\.com/);
   assert.match(html, /mailto:gramozshala03@gmail\.com/);
   assert.match(html, /tel:\+38348570674/);
-  assert.match(html, /Designed &amp; built by/);
+  assert.match(html, /Websites, apps, and AI tools built with purpose./);
+  assert.match(html, /Visit Malera Studio/);
+  assert.match(html, /Web development/);
   assert.match(html, /href="https:\/\/malera\.studio\/"/);
   assert.match(html, /target="_blank"/);
   assert.match(html, /application\/ld\+json/);
