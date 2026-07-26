@@ -14,6 +14,7 @@ import {
 } from "@/components/PortfolioInteractions";
 import { ParticleTypography } from "@/components/ParticleTypography";
 import { CursorGrid } from "@/components/CursorGrid";
+import { CurvedInput } from "@/components/CurvedInput";
 import { portfolio } from "@/data/portfolio";
 
 function SectionLabel({
@@ -334,6 +335,12 @@ export default function PortfolioClient() {
                 collaboration, and new opportunities.
               </p>
             </div>
+            <CurvedInput
+              defaultValue={portfolio.contact.email}
+              placeholder="Gramoz's email"
+              buttonText="Email Gramoz"
+              submitHref={`mailto:${portfolio.contact.email}`}
+            />
             <div className="contact-list">
               <ContactMethod
                 type="Email"

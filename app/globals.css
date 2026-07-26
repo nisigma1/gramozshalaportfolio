@@ -1278,6 +1278,73 @@ ul {
   text-wrap: balance;
 }
 
+.curved-input {
+  position: relative;
+  width: min(100%, 46rem);
+  margin: 3.5rem 0 2.5rem;
+}
+
+.curved-input-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.curved-input-shell {
+  fill: var(--surface);
+  stroke: var(--line-strong);
+  stroke-width: 1.5;
+  transition: stroke 180ms ease;
+}
+
+.curved-input-accent {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 5;
+  opacity: 0;
+  transition: opacity 180ms ease;
+}
+
+.curved-input.is-focused .curved-input-shell { stroke: var(--accent); }
+.curved-input.is-focused .curved-input-accent { opacity: 0.4; }
+.curved-input-text,
+.curved-input-button-label {
+  font-family: var(--font-geist), Arial, sans-serif;
+  font-size: 18px;
+}
+
+.curved-input-text { fill: var(--text); }
+.curved-input-button { fill: var(--accent); transition: filter 180ms ease; }
+.curved-input:hover .curved-input-button { filter: brightness(1.08); }
+.curved-input-button-label { fill: #fff; font-weight: 650; }
+.curved-input-field {
+  position: absolute;
+  inset: 0 24% 0 0;
+  width: 76%;
+  height: 100%;
+  border: 0;
+  background: transparent;
+  color: transparent;
+  caret-color: transparent;
+  outline: none;
+  opacity: 0;
+}
+
+.curved-input-hit-area {
+  position: absolute;
+  top: 18%;
+  right: 2%;
+  width: 24%;
+  height: 64%;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  cursor: pointer;
+}
+
+.curved-input-hit-area:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+
 .contact-list {
   display: grid;
   gap: 0.75rem;
