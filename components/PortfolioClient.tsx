@@ -133,6 +133,9 @@ export default function PortfolioClient() {
         Skip to content
       </a>
       <Navigation />
+      <div className="site-dot-grid" aria-hidden="true">
+        <DotGrid dotSize={4} gap={28} proximity={150} />
+      </div>
 
       <main id="main-content">
         <section className="hero" id="home" aria-labelledby="hero-name">
@@ -214,7 +217,6 @@ export default function PortfolioClient() {
           <div className="page-shell">
             <SectionLabel>Education</SectionLabel>
             <div className="education-visual">
-              <DotGrid />
               <div className="education-block" aria-labelledby="education-heading">
               <div className="education-status">
                 <span className="status-dot" aria-hidden="true" />

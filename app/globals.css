@@ -681,6 +681,23 @@ ul {
 
 .dot-grid canvas { display: block; }
 
+.site-dot-grid {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  height: 100vh;
+  pointer-events: none;
+  opacity: 0.52;
+  mask-image: linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%);
+}
+
+.site-dot-grid .dot-grid,
+.site-dot-grid canvas { pointer-events: none; }
+
+.site-header,
+main,
+.site-footer { position: relative; z-index: 1; }
+
 .education-section {
   background: var(--bg);
 }
