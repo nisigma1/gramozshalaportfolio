@@ -13,6 +13,7 @@ import {
   Navigation,
 } from "@/components/PortfolioInteractions";
 import { ParticleTypography } from "@/components/ParticleTypography";
+import { CursorGrid } from "@/components/CursorGrid";
 import { portfolio } from "@/data/portfolio";
 
 function SectionLabel({
@@ -82,7 +83,13 @@ function MaleraSection() {
             </a>
           </div>
           <div className="malera-services" aria-label="Malera Studio services">
-            <ParticleTypography text="MALERA" />
+            <div className="malera-signal-stage">
+              <CursorGrid cellSize={58} radius={142} />
+              <div className="malera-signal-content">
+                <ParticleTypography text="MALERA" />
+                <span>Move through the system</span>
+              </div>
+            </div>
             <p className="malera-services-label">What the studio makes</p>
             <ul>
               {portfolio.studio.services.map((service, index) => (
