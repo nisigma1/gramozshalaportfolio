@@ -1,0 +1,122 @@
+"use client";
+
+import { useEffect, useRef } from "react";
+
+type DotGridProps = {
+  dotSize?: number;
+  gap?: number;
+  baseColor?: string;
+  activeColor?: string;
+  proximity?: number;
+  className?: string;
+};
+
+type Dot = { x: number; y: number; offsetX: number; offsetY: number; velocityX: number; velocityY: number };
+
+const parseColor = (value: string) => {
+  const hex = value.replace("#", "");
+  const number = Number.parseInt(hex.length === 3 ? hex.split("").map((part) => part + part).join("") : hex, 16);
+  return [(number >> 16) & 255, (number >> 8) & 255, number & 255] as const;
+};
+
+export function DotGrid({
+  dotSize = 5,
+  gap = 24,
+  baseColor = "#282d35",
+  activeColor = "#3B82F6",
+  proximity = 120,
+  className = "",
+}: DotGridProps) {
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    const wrapper = wrapperRef.current;
+    const canvas = canvasRef.current;
+    const context = canvas?.getContext("2d");
+    if (!wrapper || !canvas || !context) return;
+
+    let dots: Dot[] = [];
+    let width = 0;
+    let height = 0;
+    let dpr = 1;
+    let frame = 0;
+    let pointerX = -1000;
+    let pointerY = -1000;
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const [baseR, baseG, baseB] = parseColor(baseColor);
+    const [activeR, activeG, activeB] = parseColor(activeColor);
+
+    const resize = () => {
+      width = wrapper.clientWidth;
+      height = wrapper.clientHeight;
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width = Math.max(1, Math.round(width * dpr));
+      canvas.height = Math.max(1, Math.round(height * dpr));
+      canvas.style.width = `${width}px`;
+      canvas.style.height = `${height}px`;
+      context.setTransform(dpr, 0, 0, dpr, 0, 0);
+      dots = [];
+      const step = dotSize + gap;
+      for (let y = dotSize / 2; y < height; y += step) {
+        for (let x = dotSize / 2; x < width; x += step) {
+          dots.push({ x, y, offsetX: 0, offsetY: 0, velocityX: 0, velocityY: 0 });
+        }
+      }
+    };
+
+    const draw = () => {
+      context.clearRect(0, 0, width, height);
+      for (const dot of dots) {
+        const distance = Math.hypot(dot.x - pointerX, dot.y - pointerY);
+        const intensity = Math.max(0, 1 - distance / proximity);
+        if (!reducedMotion) {
+          dot.velocityX += (0 - dot.offsetX) * 0.025;
+          dot.velocityY += (0 - dot.offsetY) * 0.025;
+          dot.velocityX *= 0.82;
+          dot.velocityY *= 0.82;
+          dot.offsetX += dot.velocityX;
+          dot.offsetY += dot.velocityY;
+        }
+        const r = Math.round(baseR + (activeR - baseR) * intensity);
+        const g = Math.round(baseG + (activeG - baseG) * intensity);
+        const b = Math.round(baseB + (activeB - baseB) * intensity);
+        context.fillStyle = `rgba(${r}, ${g}, ${b}, ${0.32 + intensity * 0.65})`;
+        context.beginPath();
+        context.arc(dot.x + dot.offsetX, dot.y + dot.offsetY, dotSize / 2, 0, Math.PI * 2);
+        context.fill();
+      }
+      if (!reducedMotion) frame = requestAnimationFrame(draw);
+    };
+
+    const updatePointer = (event: PointerEvent) => {
+      const rect = canvas.getBoundingClientRect();
+      pointerX = event.clientX - rect.left;
+      pointerY = event.clientY - rect.top;
+      for (const dot of dots) {
+        const distance = Math.hypot(dot.x - pointerX, dot.y - pointerY);
+        if (distance < proximity) {
+          const push = (1 - distance / proximity) * 1.6;
+          const angle = Math.atan2(dot.y - pointerY, dot.x - pointerX);
+          dot.velocityX += Math.cos(angle) * push;
+          dot.velocityY += Math.sin(angle) * push;
+        }
+      }
+    };
+    const clearPointer = () => { pointerX = -1000; pointerY = -1000; };
+    const observer = new ResizeObserver(resize);
+    observer.observe(wrapper);
+    resize();
+    draw();
+    wrapper.addEventListener("pointermove", updatePointer, { passive: true });
+    wrapper.addEventListener("pointerleave", clearPointer, { passive: true });
+    return () => {
+      cancelAnimationFrame(frame);
+      observer.disconnect();
+      wrapper.removeEventListener("pointermove", updatePointer);
+      wrapper.removeEventListener("pointerleave", clearPointer);
+    };
+  }, [activeColor, baseColor, dotSize, gap, proximity]);
+
+  return <div ref={wrapperRef} className={`dot-grid ${className}`} aria-hidden="true"><canvas ref={canvasRef} /></div>;
+}

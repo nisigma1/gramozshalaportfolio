@@ -14,6 +14,7 @@ import {
 } from "@/components/PortfolioInteractions";
 import { ParticleTypography } from "@/components/ParticleTypography";
 import { CursorGrid } from "@/components/CursorGrid";
+import { DotGrid } from "@/components/DotGrid";
 import { portfolio } from "@/data/portfolio";
 
 function SectionLabel({
@@ -212,7 +213,9 @@ export default function PortfolioClient() {
         >
           <div className="page-shell">
             <SectionLabel>Education</SectionLabel>
-            <div className="education-block" aria-labelledby="education-heading">
+            <div className="education-visual">
+              <DotGrid />
+              <div className="education-block" aria-labelledby="education-heading">
               <div className="education-status">
                 <span className="status-dot" aria-hidden="true" />
                 Current education
@@ -221,6 +224,7 @@ export default function PortfolioClient() {
               <div>
                 <h3 id="education-heading">{portfolio.education.institution}</h3>
                 <p>{portfolio.education.program}</p>
+              </div>
               </div>
             </div>
           </div>
