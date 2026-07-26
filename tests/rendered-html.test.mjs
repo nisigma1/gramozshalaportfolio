@@ -33,7 +33,7 @@ test("server-renders the complete Gramoz Shala portfolio", async () => {
     html,
     /<title>Gramoz Shala — Electronics, Automation &amp; Robotics<\/title>/i,
   );
-  assert.match(html, /<h1[^>]*>Gramoz Shala<\/h1>/);
+  assert.match(html, /<h1[^>]*>[\s\S]*Gramoz[\s\S]*Shala[\s\S]*<\/h1>/);
   assert.match(html, /Engineering ideas into systems that work\./);
   assert.match(html, /Student Initiative for Innovation/);
   assert.match(html, /Faculty of Electrical and Computer Engineering/);
@@ -42,16 +42,23 @@ test("server-renders the complete Gramoz Shala portfolio", async () => {
   assert.match(html, /gramozshala03@gmail\.com/);
   assert.match(html, /mailto:gramozshala03@gmail\.com/);
   assert.match(html, /tel:\+38348570674/);
+  assert.match(html, /Designed &amp; built by/);
+  assert.match(html, /href="https:\/\/malera\.studio\/"/);
+  assert.match(html, /target="_blank"/);
   assert.match(html, /application\/ld\+json/);
   assert.match(html, /og\.png/);
   assert.doesNotMatch(html, /codex-preview|Your site is taking shape|lorem ipsum/i);
 });
 
 test("keeps portfolio content typed and accessibility safeguards in source", async () => {
-  const [page, layout, client, data, css, packageJson] = await Promise.all([
+  const [page, layout, client, interactions, data, css, packageJson] = await Promise.all([
     readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
     readFile(new URL("../app/layout.tsx", import.meta.url), "utf8"),
     readFile(new URL("../components/PortfolioClient.tsx", import.meta.url), "utf8"),
+    readFile(
+      new URL("../components/PortfolioInteractions.tsx", import.meta.url),
+      "utf8",
+    ),
     readFile(new URL("../data/portfolio.ts", import.meta.url), "utf8"),
     readFile(new URL("../app/globals.css", import.meta.url), "utf8"),
     readFile(new URL("../package.json", import.meta.url), "utf8"),
@@ -61,10 +68,11 @@ test("keeps portfolio content typed and accessibility safeguards in source", asy
   assert.match(layout, /generateMetadata/);
   assert.match(layout, /localStorage\.getItem\("gramoz-theme"\)/);
   assert.match(client, /className="skip-link"/);
-  assert.match(client, /aria-modal="true"/);
-  assert.match(client, /aria-expanded=\{isOpen\}/);
-  assert.match(client, /aria-live="polite"/);
-  assert.match(client, /event\.key === "Escape"/);
+  assert.doesNotMatch(client, /"use client"/);
+  assert.match(interactions, /aria-modal="true"/);
+  assert.match(interactions, /aria-expanded=\{isOpen\}/);
+  assert.match(interactions, /aria-live="polite"/);
+  assert.match(interactions, /event\.key === "Escape"/);
   assert.match(data, /satisfies readonly Experience\[\]/);
   assert.match(data, /Volunteer of the Year 2019/);
   assert.match(css, /prefers-reduced-motion:\s*reduce/);

@@ -82,9 +82,10 @@ export default function RootLayout({
       <head>
         <link
           rel="preload"
-          as="image"
-          href="/images/gramoz-shala.jpg"
-          fetchPriority="high"
+          as="font"
+          href="/fonts/geist-latin.woff2"
+          type="font/woff2"
+          crossOrigin="anonymous"
         />
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
