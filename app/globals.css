@@ -948,9 +948,12 @@ ul {
 
 .malera-layout {
   display: grid;
+  min-width: 0;
   gap: 3rem;
 }
 
+.malera-copy,
+.malera-services { min-width: 0; }
 .malera-copy { max-width: 46rem; }
 .malera-kicker { margin-bottom: 1rem; }
 .malera-copy h2 {
@@ -1007,6 +1010,16 @@ ul {
 .malera-services li strong { font-size: 1rem; font-weight: 600; }
 .malera-services li svg { color: var(--accent); transition: transform 160ms ease; }
 .malera-services li:hover svg { transform: translateX(0.2rem); }
+
+@media (max-width: 29.99rem) {
+  .malera-section { padding-block: 4rem; }
+  .malera-heading-row { margin-bottom: 2rem; }
+  .malera-copy h2 { font-size: clamp(2.35rem, 12vw, 3.2rem); }
+  .malera-description { margin-block: 1.35rem 1.6rem; font-size: 1rem; }
+  .particle-type { height: 7.5rem; }
+  .malera-services li { grid-template-columns: 1.6rem minmax(0, 1fr) auto; gap: 0.55rem; }
+  .malera-services li strong { font-size: 0.92rem; }
+}
 
 .skills-section {
   background: var(--surface);

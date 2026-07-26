@@ -144,10 +144,10 @@ export default function PortfolioClient() {
                 {/* Direct image delivery avoids a runtime optimizer dependency. */}
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src="/images/gramoz-shala.webp"
+                  src="/images/gramoz-shala-clean.png"
                   alt="Portrait of Gramoz Shala wearing a black turtleneck"
-                  width={1024}
-                  height={1024}
+                  width={1126}
+                  height={1126}
                   loading="eager"
                   fetchPriority="auto"
                   decoding="async"
