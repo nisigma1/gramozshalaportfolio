@@ -63,9 +63,8 @@ const themeScript = `
   (() => {
     try {
       const saved = localStorage.getItem("gramoz-theme");
-      const systemLight = window.matchMedia("(prefers-color-scheme: light)").matches;
       document.documentElement.dataset.theme =
-        saved === "light" || saved === "dark" ? saved : systemLight ? "light" : "dark";
+        saved === "light" || saved === "dark" ? saved : "dark";
     } catch {
       document.documentElement.dataset.theme = "dark";
     }
