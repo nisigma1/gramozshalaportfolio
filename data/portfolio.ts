@@ -16,6 +16,13 @@ export type SkillGroup = {
   items: readonly string[];
 };
 
+export type ImpactMetric = {
+  value: number;
+  prefix?: string;
+  suffix?: string;
+  label: string;
+};
+
 export type Certification = {
   name: string;
   issuer: string;
@@ -27,7 +34,7 @@ export const portfolio = {
   title: "Electronics, Automation & Robotics Student",
   headline: "Engineering ideas into systems that work.",
   heroText:
-    "Electrical and Computer Engineering student focused on electronics, automation, robotics, and practical technology-driven problem-solving.",
+    "I am an Electrical and Computer Engineering student focused on electronics, automation, robotics, and technology-driven problem-solving.",
   about: {
     statement:
       "I am interested in the point where information becomes action.",
@@ -43,6 +50,11 @@ export const portfolio = {
         "Understanding components, circuits, and the hardware that makes modern systems possible.",
     },
     {
+      title: "Sensors & hardware",
+      description:
+        "Learning how physical signals are measured, processed, and converted into action.",
+    },
+    {
       title: "Automation",
       description:
         "Exploring how control logic turns repeatable processes into reliable outcomes.",
@@ -51,11 +63,6 @@ export const portfolio = {
       title: "Robotics",
       description:
         "Connecting mechanics, electronics, sensing, and control into purposeful machines.",
-    },
-    {
-      title: "Sensors & hardware",
-      description:
-        "Learning how physical signals are measured, processed, and converted into action.",
     },
     {
       title: "Technology & innovation",
@@ -81,9 +88,9 @@ export const portfolio = {
       summary:
         "Supported the initiative through project writing, event organization, and public communication.",
       details: [
-        "Organized events and wrote project proposals.",
-        "Published organizational activities and supported event communication.",
-        "Edited video and photography from the organization’s events.",
+        "Organized events and wrote project proposals for events with up to 1,300 participants.",
+        "Published organizational activities and supported event planning and communication.",
+        "Edited event video and photography.",
       ],
     },
     {
@@ -109,18 +116,42 @@ export const portfolio = {
       ],
     },
   ] satisfies readonly Experience[],
+  impact: [
+    {
+      value: 1300,
+      suffix: "+",
+      label: "event participants",
+    },
+    {
+      value: 2,
+      label: "co-founder roles",
+    },
+    {
+      value: 6,
+      label: "certifications & recognitions",
+    },
+    {
+      value: 2021,
+      prefix: "Since ",
+      label: "engineering studies",
+    },
+  ] satisfies readonly ImpactMetric[],
   skills: [
     {
       category: "Communication",
-      items: ["Public speaking", "Project writing"],
+      items: ["Public speaking", "Effective communication", "Client interaction"],
     },
     {
       category: "Organization",
-      items: ["Event planning and management", "Problem-solving"],
+      items: ["Project writing", "Event planning", "Event management"],
     },
     {
-      category: "Creative & digital",
-      items: ["Photography", "Social media management"],
+      category: "Digital & Creative",
+      items: ["Photography", "Video/content editing", "Social media management"],
+    },
+    {
+      category: "Thinking",
+      items: ["Problem-solving", "Critical thinking", "Technical curiosity"],
     },
   ] satisfies readonly SkillGroup[],
   certifications: [

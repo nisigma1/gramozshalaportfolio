@@ -37,8 +37,10 @@ test("server-renders the complete Gramoz Shala portfolio", async () => {
   assert.match(html, /Engineering ideas into systems that work\./);
   assert.match(html, /Student Initiative for Innovation/);
   assert.match(html, /Faculty of Electrical and Computer Engineering/);
-  assert.match(html, /Learning beyond the lecture hall\./i);
+  assert.match(html, /Certifications &amp; Recognition\./i);
+  assert.match(html, /1,300 participants/i);
   assert.match(html, /gramozshala03@gmail\.com/);
+  assert.match(html, /mailto:gramozshala03@gmail\.com/);
   assert.match(html, /tel:\+38348570674/);
   assert.match(html, /application\/ld\+json/);
   assert.match(html, /og\.png/);

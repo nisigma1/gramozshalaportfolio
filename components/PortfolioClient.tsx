@@ -31,10 +31,6 @@ const navigation = [
   { id: "contact", label: "Contact" },
 ] as const;
 
-const gmailComposeUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(
-  portfolio.contact.email,
-)}`;
-
 type Theme = "dark" | "light";
 
 function ThemeToggle({ compact = false }: { compact?: boolean }) {
@@ -225,7 +221,7 @@ function Navigation() {
             </div>
 
             <nav className="mobile-menu-nav" aria-label="Mobile navigation">
-              {navigation.map((item, index) => (
+              {navigation.map((item) => (
                 <a
                   key={item.id}
                   href={`#${item.id}`}
@@ -233,7 +229,6 @@ function Navigation() {
                   aria-current={active === item.id ? "location" : undefined}
                   onClick={closeMenu}
                 >
-                  <span aria-hidden="true">0{index + 1}</span>
                   <strong>{item.label}</strong>
                   <ArrowRight aria-hidden="true" size={18} />
                 </a>
@@ -244,9 +239,7 @@ function Navigation() {
               <ThemeToggle />
               <a
                 className="menu-secondary-action"
-                href={gmailComposeUrl}
-                target="_blank"
-                rel="noreferrer"
+                href={`mailto:${portfolio.contact.email}`}
                 onClick={closeMenu}
               >
                 <Mail aria-hidden="true" size={18} />
@@ -261,17 +254,152 @@ function Navigation() {
 }
 
 function SectionLabel({
-  number,
   children,
 }: {
-  number: string;
   children: ReactNode;
 }) {
   return (
     <div className="section-label">
-      <span aria-hidden="true">{number}</span>
       <p>{children}</p>
     </div>
+  );
+}
+
+function ExperienceTimeline() {
+  const [openIndex, setOpenIndex] = useState(0);
+
+  return (
+    <div className="experience-list">
+      {portfolio.experience.map((item, index) => {
+        const isOpen = openIndex === index;
+        const panelId = `experience-panel-${index}`;
+        const buttonId = `experience-button-${index}`;
+
+        return (
+          <article
+            className={`experience-item${isOpen ? " is-open" : ""}`}
+            key={item.organization}
+          >
+            <button
+              className="experience-trigger"
+              id={buttonId}
+              type="button"
+              aria-expanded={isOpen}
+              aria-controls={panelId}
+              onClick={() => setOpenIndex(index)}
+            >
+              <span className="experience-meta">
+                <time>{item.period}</time>
+                <span>{item.role}</span>
+              </span>
+              <span className="experience-title">{item.organization}</span>
+              <ChevronDown
+                className="experience-icon"
+                aria-hidden="true"
+                size={20}
+              />
+            </button>
+            <div
+              className="experience-panel"
+              id={panelId}
+              role="region"
+              aria-labelledby={buttonId}
+              aria-hidden={!isOpen}
+            >
+              <div className="experience-panel-inner">
+                <div className="experience-description">
+                  <p>{item.summary}</p>
+                  <ul>
+                    {item.details.map((detail) => (
+                      <li key={detail}>{detail}</li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </article>
+        );
+      })}
+    </div>
+  );
+}
+
+function ImpactMetrics() {
+  const sectionRef = useRef<HTMLElement>(null);
+  const [progress, setProgress] = useState(0);
+
+  useEffect(() => {
+    const section = sectionRef.current;
+    if (!section) return;
+
+    let frame = 0;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
+        observer.disconnect();
+
+        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+          setProgress(1);
+          return;
+        }
+
+        const start = performance.now();
+        const duration = 900;
+        const animate = (now: number) => {
+          const next = Math.min((now - start) / duration, 1);
+          setProgress(1 - (1 - next) ** 3);
+          if (next < 1) frame = requestAnimationFrame(animate);
+        };
+        frame = requestAnimationFrame(animate);
+      },
+      { threshold: 0.35 },
+    );
+
+    observer.observe(section);
+    return () => {
+      observer.disconnect();
+      cancelAnimationFrame(frame);
+    };
+  }, []);
+
+  return (
+    <section
+      className="impact-section"
+      ref={sectionRef}
+      aria-labelledby="impact-heading"
+    >
+      <div className="page-shell">
+        <SectionLabel>Verified impact</SectionLabel>
+        <h2 className="sr-only" id="impact-heading">
+          Impact metrics
+        </h2>
+        <dl className="impact-grid">
+          {portfolio.impact.map((metric) => {
+            const animatedValue = Math.round(metric.value * progress);
+            const formatValue = (value: number) =>
+              metric.prefix ? `${value}` : value.toLocaleString("en-US");
+            const visibleValue = formatValue(animatedValue);
+            const finalValue = `${metric.prefix ?? ""}${formatValue(
+              metric.value,
+            )}${metric.suffix ?? ""}`;
+
+            return (
+              <div key={metric.label}>
+                <dt>{metric.label}</dt>
+                <dd>
+                  <span aria-hidden="true">
+                    {metric.prefix}
+                    {visibleValue}
+                    {metric.suffix}
+                  </span>
+                  <span className="sr-only">{finalValue}</span>
+                </dd>
+              </div>
+            );
+          })}
+        </dl>
+      </div>
+    </section>
   );
 }
 
@@ -295,9 +423,6 @@ function CertificationArchive() {
               aria-controls={panelId}
               onClick={() => setOpenIndex(isOpen ? null : index)}
             >
-              <span className="certification-index" aria-hidden="true">
-                0{index + 1}
-              </span>
               <span className="certification-title">{item.name}</span>
               <ChevronDown className="certification-icon" aria-hidden="true" size={20} />
             </button>
@@ -349,12 +474,10 @@ function ContactMethod({
   type,
   value,
   href,
-  external = false,
 }: {
   type: "Email" | "Phone";
   value: string;
   href: string;
-  external?: boolean;
 }) {
   const [copied, setCopied] = useState(false);
   const timerRef = useRef<number | null>(null);
@@ -384,13 +507,7 @@ function ContactMethod({
         <Icon aria-hidden="true" size={18} />
         <span>{type}</span>
       </div>
-      <a
-        href={href}
-        target={external ? "_blank" : undefined}
-        rel={external ? "noreferrer" : undefined}
-      >
-        {value}
-      </a>
+      <a href={href}>{value}</a>
       <button
         className="copy-button"
         type="button"
@@ -452,7 +569,7 @@ export default function PortfolioClient() {
                 height={1024}
                 loading="eager"
                 fetchPriority="high"
-                decoding="async"
+                decoding="sync"
               />
               <figcaption>
                 <span>Electrical & Computer Engineering</span>
@@ -464,21 +581,26 @@ export default function PortfolioClient() {
               <p>{portfolio.heroText}</p>
               <div className="hero-actions">
                 <a className="button button-primary" href="#about">
-                  <span>Explore profile</span>
+                  <span>Explore my work</span>
                   <ArrowDownRight aria-hidden="true" size={18} />
                 </a>
                 <a className="button button-secondary" href="#contact">
-                  <span>Contact Gramoz</span>
+                  <span>Contact me</span>
                   <ArrowRight aria-hidden="true" size={18} />
                 </a>
               </div>
             </div>
+
+            <a className="hero-scroll" href="#about">
+              <span>Scroll to explore</span>
+              <ArrowDownRight aria-hidden="true" size={17} />
+            </a>
           </div>
         </section>
 
         <section className="section about-section" id="about" aria-labelledby="about-heading">
           <div className="page-shell">
-            <SectionLabel number="01">About</SectionLabel>
+            <SectionLabel>About</SectionLabel>
             <div className="about-grid">
               <div className="about-heading">
                 <p className="eyebrow">A systems perspective</p>
@@ -489,7 +611,16 @@ export default function PortfolioClient() {
                 <p>{portfolio.about.perspective}</p>
               </div>
             </div>
+          </div>
+        </section>
 
+        <section
+          className="section education-section"
+          id="education"
+          aria-labelledby="education-heading"
+        >
+          <div className="page-shell">
+            <SectionLabel>Education</SectionLabel>
             <div className="education-block" aria-labelledby="education-heading">
               <div className="education-status">
                 <span className="status-dot" aria-hidden="true" />
@@ -506,7 +637,7 @@ export default function PortfolioClient() {
 
         <section className="section focus-section" id="focus" aria-labelledby="focus-heading">
           <div className="page-shell">
-            <SectionLabel number="02">Focus</SectionLabel>
+            <SectionLabel>Engineering focus</SectionLabel>
             <div className="section-intro">
               <h2 id="focus-heading">From physical signals to useful outcomes.</h2>
               <p>
@@ -514,15 +645,25 @@ export default function PortfolioClient() {
                 learning, and problem-solving.
               </p>
             </div>
-            <div className="focus-grid">
-              {portfolio.focusAreas.map((area, index) => (
-                <article className="focus-item" key={area.title}>
-                  <span aria-hidden="true">0{index + 1}</span>
-                  <h3>{area.title}</h3>
-                  <p>{area.description}</p>
-                </article>
-              ))}
+            <div className="focus-route" aria-label="Sense, control, and apply">
+              <span>Sense</span>
+              <span>Control</span>
+              <span>Apply</span>
             </div>
+            <ol className="focus-system">
+              {portfolio.focusAreas.map((area, index) => (
+                <li className="focus-item" key={area.title}>
+                  <span className="focus-node" aria-hidden="true" />
+                  <div>
+                    <span className="focus-stage">
+                      {index < 2 ? "Sense" : index < 4 ? "Control" : "Apply"}
+                    </span>
+                    <h3>{area.title}</h3>
+                    <p>{area.description}</p>
+                  </div>
+                </li>
+              ))}
+            </ol>
           </div>
         </section>
 
@@ -532,7 +673,7 @@ export default function PortfolioClient() {
           aria-labelledby="experience-heading"
         >
           <div className="page-shell">
-            <SectionLabel number="03">Experience</SectionLabel>
+            <SectionLabel>Experience</SectionLabel>
             <div className="section-intro">
               <h2 id="experience-heading">Initiative, communication, and practical experience.</h2>
               <p>
@@ -540,34 +681,15 @@ export default function PortfolioClient() {
                 working directly with people.
               </p>
             </div>
-            <div className="experience-list">
-              {portfolio.experience.map((item, index) => (
-                <article className="experience-item" key={item.organization}>
-                  <div className="experience-meta">
-                    <span aria-hidden="true">0{index + 1}</span>
-                    <time>{item.period}</time>
-                  </div>
-                  <div className="experience-title">
-                    <p>{item.role}</p>
-                    <h3>{item.organization}</h3>
-                  </div>
-                  <div className="experience-description">
-                    <p>{item.summary}</p>
-                    <ul>
-                      {item.details.map((detail) => (
-                        <li key={detail}>{detail}</li>
-                      ))}
-                    </ul>
-                  </div>
-                </article>
-              ))}
-            </div>
+            <ExperienceTimeline />
           </div>
         </section>
 
+        <ImpactMetrics />
+
         <section className="section skills-section" id="skills" aria-labelledby="skills-heading">
           <div className="page-shell">
-            <SectionLabel number="04">Skills</SectionLabel>
+            <SectionLabel>Skills</SectionLabel>
             <div className="section-intro">
               <h2 id="skills-heading">Capabilities developed beyond the lab.</h2>
               <p>
@@ -576,9 +698,8 @@ export default function PortfolioClient() {
               </p>
             </div>
             <div className="skills-grid">
-              {portfolio.skills.map((group, index) => (
+              {portfolio.skills.map((group) => (
                 <article className="skill-group" key={group.category}>
-                  <span aria-hidden="true">0{index + 1}</span>
                   <h3>{group.category}</h3>
                   <ul>
                     {group.items.map((item) => (
@@ -614,10 +735,10 @@ export default function PortfolioClient() {
           aria-labelledby="certifications-heading"
         >
           <div className="page-shell">
-            <SectionLabel number="05">Certifications</SectionLabel>
+            <SectionLabel>Archive</SectionLabel>
             <div className="certifications-grid">
               <div className="section-intro">
-                <h2 id="certifications-heading">Learning beyond the lecture hall.</h2>
+                <h2 id="certifications-heading">Certifications & Recognition.</h2>
                 <p>
                   Training across entrepreneurship, communication, inclusion,
                   and critical thinking, alongside recognition for volunteering.
@@ -630,7 +751,7 @@ export default function PortfolioClient() {
 
         <section className="contact-section" id="contact" aria-labelledby="contact-heading">
           <div className="page-shell">
-            <SectionLabel number="06">Contact</SectionLabel>
+            <SectionLabel>Contact</SectionLabel>
             <div className="contact-heading">
               <h2 id="contact-heading">Let&apos;s build something meaningful.</h2>
               <p>
@@ -642,8 +763,7 @@ export default function PortfolioClient() {
               <ContactMethod
                 type="Email"
                 value={portfolio.contact.email}
-                href={gmailComposeUrl}
-                external
+                href={`mailto:${portfolio.contact.email}`}
               />
               <ContactMethod
                 type="Phone"
