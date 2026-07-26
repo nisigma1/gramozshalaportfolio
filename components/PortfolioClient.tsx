@@ -158,10 +158,7 @@ function Navigation() {
     <>
       <header className={`site-header${scrolled ? " is-scrolled" : ""}`}>
         <div className="header-shell">
-          <a className="brand" href="#home" aria-label="GS — Gramoz Shala, home">
-            <span className="brand-mark" aria-hidden="true">
-              GS
-            </span>
+          <a className="brand" href="#home" aria-label="Gramoz Shala, home">
             <span className="brand-name">Gramoz Shala</span>
           </a>
 
@@ -211,9 +208,6 @@ function Navigation() {
           <div className="mobile-menu-shell">
             <div className="mobile-menu-header">
               <a className="brand" href="#home" onClick={closeMenu}>
-                <span className="brand-mark" aria-hidden="true">
-                  GS
-                </span>
                 <span className="brand-name">Gramoz Shala</span>
               </a>
               <button
