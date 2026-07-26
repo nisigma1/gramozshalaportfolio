@@ -165,7 +165,6 @@ export default function PortfolioClient() {
                 />
                 <figcaption>
                   <span>Electrical & Computer Engineering</span>
-                  <span>2021—Present</span>
                 </figcaption>
               </figure>
 
