@@ -215,6 +215,7 @@ export const portfolio = {
   ],
   contact: {
     email: "gramozshala03@gmail.com",
+    emailHref: "https://mail.google.com/mail/?view=cm&fs=1&to=gramozshala03%40gmail.com",
     phoneDisplay: "+383 48 570 674",
     phoneHref: "+38348570674",
   },

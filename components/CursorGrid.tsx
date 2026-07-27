@@ -9,15 +9,23 @@ type CursorGridProps = {
   className?: string;
 };
 
-const rgbFromHex = (hex: string) => {
-  const value = hex.replace("#", "").padEnd(6, "0");
+const rgbFromColor = (color: string) => {
+  const rgbMatch = color.match(/\d+(\.\d+)?/g);
+  if (rgbMatch && !color.trim().startsWith("#")) {
+    return [
+      Number(rgbMatch[0] ?? 0),
+      Number(rgbMatch[1] ?? 0),
+      Number(rgbMatch[2] ?? 0),
+    ] as const;
+  }
+  const value = color.trim().replace("#", "").padEnd(6, "0");
   const number = Number.parseInt(value.slice(0, 6), 16);
   return [(number >> 16) & 255, (number >> 8) & 255, number & 255] as const;
 };
 
 export function CursorGrid({
   cellSize = 64,
-  color = "#3B82F6",
+  color,
   radius = 150,
   className = "",
 }: CursorGridProps) {
@@ -41,7 +49,21 @@ export function CursorGrid({
     let animationFrame = 0;
     let running = false;
     let lastFrame = 0;
-    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const coarsePointerQuery = window.matchMedia("(pointer: coarse)");
+    let reducedMotion = motionQuery.matches;
+    let coarsePointer = coarsePointerQuery.matches;
+    let visibleInViewport = true;
+    let accentRgb = rgbFromColor("rgb(59, 130, 246)");
+    let ambientStart = performance.now();
+
+    const syncColor = () => {
+      const styles = getComputedStyle(document.documentElement);
+      accentRgb = rgbFromColor(
+        (color ?? styles.getPropertyValue("--accent")).trim() ||
+          "rgb(59, 130, 246)",
+      );
+    };
 
     const rebuild = () => {
       width = container.offsetWidth;
@@ -88,7 +110,14 @@ export function CursorGrid({
       const dt = Math.min(now - lastFrame, 50);
       lastFrame = now;
       context.clearRect(0, 0, width, height);
-      const [red, green, blue] = rgbFromHex(color);
+      if (coarsePointer && visibleInViewport && !reducedMotion && width > 0 && height > 0) {
+        const elapsed = now - ambientStart;
+        energize(
+          width * (0.5 + Math.sin(elapsed / 1320) * 0.38),
+          height * (0.5 + Math.cos(elapsed / 1680) * 0.28),
+        );
+      }
+      const [red, green, blue] = accentRgb;
       let visible = false;
       for (let index = 0; index < alphas.length; index += 1) {
         let alpha = alphas[index];
@@ -107,8 +136,11 @@ export function CursorGrid({
         context.lineWidth = 1;
         context.strokeRect(cx - cellSize / 2 + 0.5, cy - cellSize / 2 + 0.5, cellSize - 1, cellSize - 1);
       }
-      if (visible) animationFrame = requestAnimationFrame(draw);
-      else running = false;
+      if (visible || (coarsePointer && visibleInViewport && !reducedMotion)) {
+        animationFrame = requestAnimationFrame(draw);
+      } else {
+        running = false;
+      }
     };
 
     const wake = () => {
@@ -130,15 +162,50 @@ export function CursorGrid({
       rebuild();
       wake();
     });
+    const visibilityObserver = new IntersectionObserver(
+      ([entry]) => {
+        visibleInViewport = entry?.isIntersecting ?? true;
+        if (visibleInViewport) wake();
+      },
+      { threshold: 0.05 },
+    );
+    const themeObserver = new MutationObserver(() => {
+      syncColor();
+      wake();
+    });
+    const handleMotionChange = () => {
+      reducedMotion = motionQuery.matches;
+      wake();
+    };
+    const handlePointerTypeChange = () => {
+      coarsePointer = coarsePointerQuery.matches;
+      ambientStart = performance.now();
+      wake();
+    };
     resizeObserver.observe(container);
+    visibilityObserver.observe(container);
+    themeObserver.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["data-theme"],
+    });
+    motionQuery.addEventListener("change", handleMotionChange);
+    coarsePointerQuery.addEventListener("change", handlePointerTypeChange);
+    syncColor();
     rebuild();
+    if (coarsePointer) wake();
     container.addEventListener("pointermove", onPointerMove, { passive: true });
+    container.addEventListener("pointerdown", onPointerMove, { passive: true });
     container.addEventListener("pointerleave", onPointerLeave, { passive: true });
 
     return () => {
       cancelAnimationFrame(animationFrame);
       resizeObserver.disconnect();
+      visibilityObserver.disconnect();
+      themeObserver.disconnect();
+      motionQuery.removeEventListener("change", handleMotionChange);
+      coarsePointerQuery.removeEventListener("change", handlePointerTypeChange);
       container.removeEventListener("pointermove", onPointerMove);
+      container.removeEventListener("pointerdown", onPointerMove);
       container.removeEventListener("pointerleave", onPointerLeave);
     };
   }, [cellSize, color, radius]);

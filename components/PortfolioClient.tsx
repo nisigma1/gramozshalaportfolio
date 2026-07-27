@@ -65,7 +65,6 @@ function MaleraSection() {
       <div className="page-shell">
         <div className="malera-heading-row">
           <SectionLabel>{portfolio.studio.eyebrow}</SectionLabel>
-          <span className="malera-index" aria-hidden="true">04</span>
         </div>
         <div className="malera-layout">
           <div className="malera-copy">
@@ -155,7 +154,7 @@ export default function PortfolioClient() {
                 {/* Direct image delivery avoids a runtime optimizer dependency. */}
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src="/images/gramoz-shala-clean.png"
+                  src="/images/gramoz-shala-clean.jpg"
                   alt="Portrait of Gramoz Shala wearing a black turtleneck"
                   width={1126}
                   height={1126}
@@ -343,7 +342,8 @@ export default function PortfolioClient() {
               <ContactMethod
                 type="Email"
                 value={portfolio.contact.email}
-                href={`mailto:${portfolio.contact.email}`}
+                href={portfolio.contact.emailHref}
+                external
               />
               <ContactMethod
                 type="Phone"

@@ -234,7 +234,10 @@ export function Navigation() {
               <ThemeToggle />
               <a
                 className="menu-secondary-action"
-                href={`mailto:${portfolio.contact.email}`}
+                href={portfolio.contact.emailHref}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Open Gmail to email Gramoz"
                 onClick={closeMenu}
               >
                 <Mail aria-hidden="true" size={18} />
@@ -470,10 +473,12 @@ export function ContactMethod({
   type,
   value,
   href,
+  external = false,
 }: {
   type: "Email" | "Phone";
   value: string;
   href: string;
+  external?: boolean;
 }) {
   const [copied, setCopied] = useState(false);
   const timerRef = useRef<number | null>(null);
@@ -503,7 +508,14 @@ export function ContactMethod({
         <Icon aria-hidden="true" size={18} />
         <span>{type}</span>
       </div>
-      <a href={href}>{value}</a>
+      <a
+        href={href}
+        target={external ? "_blank" : undefined}
+        rel={external ? "noopener noreferrer" : undefined}
+        aria-label={external ? "Open Gmail to email Gramoz" : undefined}
+      >
+        {value}
+      </a>
       <button
         className="copy-button"
         type="button"

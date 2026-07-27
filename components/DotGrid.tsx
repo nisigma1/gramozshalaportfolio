@@ -14,7 +14,15 @@ type DotGridProps = {
 type Dot = { x: number; y: number; offsetX: number; offsetY: number; velocityX: number; velocityY: number };
 
 const parseColor = (value: string) => {
-  const hex = value.replace("#", "");
+  const rgbMatch = value.match(/\d+(\.\d+)?/g);
+  if (rgbMatch && !value.trim().startsWith("#")) {
+    return [
+      Number(rgbMatch[0] ?? 0),
+      Number(rgbMatch[1] ?? 0),
+      Number(rgbMatch[2] ?? 0),
+    ] as const;
+  }
+  const hex = value.trim().replace("#", "");
   const number = Number.parseInt(hex.length === 3 ? hex.split("").map((part) => part + part).join("") : hex, 16);
   return [(number >> 16) & 255, (number >> 8) & 255, number & 255] as const;
 };
@@ -22,8 +30,8 @@ const parseColor = (value: string) => {
 export function DotGrid({
   dotSize = 5,
   gap = 24,
-  baseColor = "#282d35",
-  activeColor = "#3B82F6",
+  baseColor,
+  activeColor,
   proximity = 120,
   className = "",
 }: DotGridProps) {
@@ -43,9 +51,23 @@ export function DotGrid({
     let frame = 0;
     let pointerX = -1000;
     let pointerY = -1000;
-    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const [baseR, baseG, baseB] = parseColor(baseColor);
-    const [activeR, activeG, activeB] = parseColor(activeColor);
+    const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+    let reducedMotion = motionQuery.matches;
+    let running = false;
+    let baseRgb = parseColor("rgb(40, 45, 53)");
+    let activeRgb = parseColor("rgb(59, 130, 246)");
+
+    const syncColors = () => {
+      const styles = getComputedStyle(document.documentElement);
+      baseRgb = parseColor(
+        (baseColor ?? styles.getPropertyValue("--dot-base")).trim() ||
+          "rgb(40, 45, 53)",
+      );
+      activeRgb = parseColor(
+        (activeColor ?? styles.getPropertyValue("--accent")).trim() ||
+          "rgb(59, 130, 246)",
+      );
+    };
 
     const resize = () => {
       width = wrapper.clientWidth;
@@ -63,10 +85,14 @@ export function DotGrid({
           dots.push({ x, y, offsetX: 0, offsetY: 0, velocityX: 0, velocityY: 0 });
         }
       }
+      draw();
     };
 
     const draw = () => {
       context.clearRect(0, 0, width, height);
+      const [baseR, baseG, baseB] = baseRgb;
+      const [activeR, activeG, activeB] = activeRgb;
+      let hasMotion = false;
       for (const dot of dots) {
         const distance = Math.hypot(dot.x - pointerX, dot.y - pointerY);
         const intensity = Math.max(0, 1 - distance / proximity);
@@ -77,6 +103,14 @@ export function DotGrid({
           dot.velocityY *= 0.82;
           dot.offsetX += dot.velocityX;
           dot.offsetY += dot.velocityY;
+          if (
+            Math.abs(dot.velocityX) > 0.015 ||
+            Math.abs(dot.velocityY) > 0.015 ||
+            Math.abs(dot.offsetX) > 0.02 ||
+            Math.abs(dot.offsetY) > 0.02
+          ) {
+            hasMotion = true;
+          }
         }
         const r = Math.round(baseR + (activeR - baseR) * intensity);
         const g = Math.round(baseG + (activeG - baseG) * intensity);
@@ -86,7 +120,17 @@ export function DotGrid({
         context.arc(dot.x + dot.offsetX, dot.y + dot.offsetY, dotSize / 2, 0, Math.PI * 2);
         context.fill();
       }
-      if (!reducedMotion) frame = requestAnimationFrame(draw);
+      if (!reducedMotion && hasMotion) {
+        frame = requestAnimationFrame(draw);
+      } else {
+        running = false;
+      }
+    };
+
+    const requestDraw = () => {
+      if (running) return;
+      running = true;
+      frame = requestAnimationFrame(draw);
     };
 
     const updatePointer = (event: PointerEvent) => {
@@ -95,6 +139,7 @@ export function DotGrid({
       pointerY = event.clientY - rect.top;
       if (pointerX < 0 || pointerY < 0 || pointerX > rect.width || pointerY > rect.height) {
         clearPointer();
+        requestDraw();
         return;
       }
       for (const dot of dots) {
@@ -106,6 +151,7 @@ export function DotGrid({
           dot.velocityY += Math.sin(angle) * push;
         }
       }
+      requestDraw();
     };
     const triggerPulse = (event: PointerEvent) => {
       updatePointer(event);
@@ -119,17 +165,33 @@ export function DotGrid({
           dot.velocityY += Math.sin(angle) * falloff * 7;
         }
       }
+      requestDraw();
     };
     const clearPointer = () => { pointerX = -1000; pointerY = -1000; };
     const observer = new ResizeObserver(resize);
+    const themeObserver = new MutationObserver(() => {
+      syncColors();
+      draw();
+    });
     observer.observe(wrapper);
+    themeObserver.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["data-theme"],
+    });
+    const onMotionChange = () => {
+      reducedMotion = motionQuery.matches;
+      draw();
+    };
+    motionQuery.addEventListener("change", onMotionChange);
+    syncColors();
     resize();
-    draw();
     window.addEventListener("pointermove", updatePointer, { passive: true });
     window.addEventListener("pointerdown", triggerPulse, { passive: true });
     return () => {
       cancelAnimationFrame(frame);
       observer.disconnect();
+      themeObserver.disconnect();
+      motionQuery.removeEventListener("change", onMotionChange);
       window.removeEventListener("pointermove", updatePointer);
       window.removeEventListener("pointerdown", triggerPulse);
     };

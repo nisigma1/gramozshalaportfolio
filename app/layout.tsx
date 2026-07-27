@@ -1,53 +1,41 @@
 import type { Metadata, Viewport } from "next";
-import { headers } from "next/headers";
 import "./globals.css";
 
-export async function generateMetadata(): Promise<Metadata> {
-  const headerStore = await headers();
-  const host = headerStore.get("x-forwarded-host") ?? headerStore.get("host");
-  const forwardedProtocol = headerStore.get("x-forwarded-proto");
-  const protocol =
-    forwardedProtocol ??
-    (host?.startsWith("localhost") || host?.startsWith("127.0.0.1")
-      ? "http"
-      : "https");
-  const origin = host ? `${protocol}://${host}` : "http://localhost:3000";
-  const title = "Gramoz Shala — Electronics, Automation & Robotics";
-  const description =
-    "Portfolio of Gramoz Shala, an Electrical and Computer Engineering student focused on electronics, automation, robotics, technology, and innovation.";
+const title = "Gramoz Shala — Electronics, Automation & Robotics";
+const description =
+  "Portfolio of Gramoz Shala, an Electrical and Computer Engineering student focused on electronics, automation, robotics, technology, and innovation.";
 
-  return {
-    metadataBase: new URL(origin),
+export const metadata: Metadata = {
+  metadataBase: new URL("https://gramoz-shala-portfolio.enis-qetaj.chatgpt.site"),
+  title,
+  description,
+  alternates: { canonical: "/" },
+  openGraph: {
+    type: "profile",
     title,
     description,
-    alternates: { canonical: "/" },
-    openGraph: {
-      type: "profile",
-      title,
-      description,
-      url: "/",
-      siteName: "Gramoz Shala",
-      images: [
-        {
-          url: "/og.png",
-          width: 1200,
-          height: 630,
-          alt: "Gramoz Shala — Electronics, Automation & Robotics",
-        },
-      ],
-    },
-    twitter: {
-      card: "summary_large_image",
-      title,
-      description,
-      images: ["/og.png"],
-    },
-    icons: {
-      icon: "/favicon.svg",
-      shortcut: "/favicon.svg",
-    },
-  };
-}
+    url: "/",
+    siteName: "Gramoz Shala",
+    images: [
+      {
+        url: "/og.png",
+        width: 1200,
+        height: 630,
+        alt: "Gramoz Shala — Electronics, Automation & Robotics",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title,
+    description,
+    images: ["/og.png"],
+  },
+  icons: {
+    icon: "/favicon.svg",
+    shortcut: "/favicon.svg",
+  },
+};
 
 export const viewport: Viewport = {
   width: "device-width",

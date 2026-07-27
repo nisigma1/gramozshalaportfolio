@@ -41,7 +41,9 @@ test("server-renders the complete Gramoz Shala portfolio", async () => {
   assert.match(html, /1,300 participants/i);
   assert.match(html, /gramozshala03@gmail\.com/);
   assert.match(html, /mailto:gramozshala03@gmail\.com/);
+  assert.match(html, /https:\/\/mail\.google\.com\/mail\/\?view=cm&amp;fs=1&amp;to=gramozshala03%40gmail\.com/);
   assert.match(html, /tel:\+38348570674/);
+  assert.match(html, /gramoz-shala-clean\.jpg/);
   assert.match(html, /Websites, apps, and AI tools built with purpose./);
   assert.match(html, /Visit Malera Studio/);
   assert.match(html, /Web development/);
@@ -67,7 +69,7 @@ test("keeps portfolio content typed and accessibility safeguards in source", asy
   ]);
 
   assert.match(page, /<PortfolioClient \/>/);
-  assert.match(layout, /generateMetadata/);
+  assert.match(layout, /metadataBase/);
   assert.match(layout, /localStorage\.getItem\("gramoz-theme"\)/);
   assert.match(client, /className="skip-link"/);
   assert.doesNotMatch(client, /"use client"/);
