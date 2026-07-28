@@ -363,7 +363,10 @@ export function ImpactMetrics() {
         </h2>
         <dl className="impact-grid">
           {portfolio.impact.map((metric) => {
-            const animatedValue = Math.round(metric.value * progress);
+            const shouldAnimate = !metric.prefix;
+            const animatedValue = shouldAnimate
+              ? Math.round(metric.value * progress)
+              : metric.value;
             const formatValue = (value: number) =>
               metric.prefix ? `${value}` : value.toLocaleString("en-US");
             const visibleValue = formatValue(animatedValue);

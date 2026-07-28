@@ -317,7 +317,7 @@ export default function PortfolioClient() {
             <SectionLabel>Archive</SectionLabel>
             <div className="certifications-grid">
               <div className="section-intro">
-                <h2 id="certifications-heading">Certifications & Recognition.</h2>
+                <h2 id="certifications-heading">Certifications & Recognitions</h2>
                 <p>
                   Training across entrepreneurship, communication, inclusion,
                   and critical thinking, alongside recognition for volunteering.

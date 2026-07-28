@@ -115,7 +115,7 @@ export const portfolio = {
     },
     {
       period: "2017—2019",
-      organization: "ELKOS ETC",
+      organization: "ELKOS GROUP",
       role: "Household Electronics Salesperson",
       summary:
         "Helped customers understand household electronics through clear product communication.",
@@ -136,7 +136,7 @@ export const portfolio = {
       label: "co-founder roles",
     },
     {
-      value: 6,
+      value: 11,
       label: "certifications & recognitions",
     },
     {

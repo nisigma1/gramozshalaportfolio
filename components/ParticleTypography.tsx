@@ -30,7 +30,7 @@ export function ParticleTypography({
   useEffect(() => {
     const container = containerRef.current;
     const canvas = canvasRef.current;
-    const context = canvas?.getContext("2d");
+    const context = canvas?.getContext("2d", { willReadFrequently: true });
     if (!container || !canvas || !context) return;
 
     let particles: Particle[] = [];

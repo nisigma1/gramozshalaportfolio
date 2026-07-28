@@ -41,7 +41,7 @@ export function DotGrid({
   useEffect(() => {
     const wrapper = wrapperRef.current;
     const canvas = canvasRef.current;
-    const context = canvas?.getContext("2d");
+    const context = canvas?.getContext("2d", { willReadFrequently: true });
     if (!wrapper || !canvas || !context) return;
 
     let dots: Dot[] = [];

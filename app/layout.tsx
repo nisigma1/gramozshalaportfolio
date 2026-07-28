@@ -6,7 +6,7 @@ const description =
   "Portfolio of Gramoz Shala, an Electrical and Computer Engineering student focused on electronics, automation, robotics, technology, and innovation.";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://gramoz-shala-portfolio.enis-qetaj.chatgpt.site"),
+  metadataBase: new URL("https://gramozshala.com"),
   title,
   description,
   alternates: { canonical: "/" },
