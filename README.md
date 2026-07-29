@@ -23,11 +23,11 @@ Use these settings when connecting the GitHub repo to Cloudflare Pages:
 - Framework preset: `None`
 - Production branch: `main`
 - Root directory: `/`
-- Build command: `npm run pages:build`
-- Build output directory: `dist`
+- Build command: `npm ci && npm run build`
+- Build output directory: `dist/pages`
 - Environment variable: `NODE_VERSION=22.13.0`
 
-The `pages:build` script runs the Vinext build, copies the client assets to the Pages output root, and creates `dist/_worker.js` so Cloudflare Pages can serve the SSR portfolio correctly.
+The `build` script runs the Vinext build, copies the client assets into `dist/pages`, copies the server bundle, and creates `dist/pages/_worker.js` so Cloudflare Pages can serve the SSR portfolio correctly.
 
 ## Included Shape
 

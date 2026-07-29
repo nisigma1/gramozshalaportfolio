@@ -1,11 +1,12 @@
-import { cp, stat, writeFile } from "node:fs/promises";
+import { cp, mkdir, stat, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 
 const root = process.cwd();
 const distDir = join(root, "dist");
 const clientDir = join(distDir, "client");
+const pagesDir = join(distDir, "pages");
 const serverEntry = join(distDir, "server", "index.js");
-const workerEntry = join(distDir, "_worker.js");
+const workerEntry = join(pagesDir, "_worker.js");
 
 async function exists(path) {
   try {
@@ -24,7 +25,14 @@ if (!(await exists(serverEntry))) {
   throw new Error("Cloudflare Pages prep failed: dist/server/index.js was not found. Run the Vinext build first.");
 }
 
-await cp(clientDir, distDir, {
+await mkdir(pagesDir, { recursive: true });
+
+await cp(clientDir, pagesDir, {
+  recursive: true,
+  force: true,
+});
+
+await cp(join(distDir, "server"), join(pagesDir, "server"), {
   recursive: true,
   force: true,
 });
@@ -40,4 +48,4 @@ await writeFile(
   "utf8",
 );
 
-console.log("Prepared Cloudflare Pages output in dist/ with _worker.js and root static assets.");
+console.log("Prepared Cloudflare Pages output in dist/pages with _worker.js and static assets.");

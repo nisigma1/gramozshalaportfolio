@@ -7,8 +7,9 @@
   },
   "scripts": {
     "dev": "node scripts/run-vinext.mjs dev",
-    "build": "node scripts/run-vinext.mjs build",
-    "pages:build": "npm run build && node scripts/prepare-cloudflare-pages.mjs",
+    "vinext:build": "node scripts/run-vinext.mjs build",
+    "build": "npm run vinext:build && node scripts/prepare-cloudflare-pages.mjs",
+    "pages:build": "npm run build",
     "start": "node scripts/run-vinext.mjs start",
     "test": "npm run build && node --test tests/rendered-html.test.mjs",
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next",
