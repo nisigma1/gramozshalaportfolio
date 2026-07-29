@@ -27,6 +27,8 @@ Use these settings when connecting the GitHub repo to Cloudflare Pages:
 - Build output directory: `dist/pages`
 - Environment variable: `NODE_VERSION=22.13.0`
 
+Cloudflare also reads `wrangler.toml`, which sets `pages_build_output_dir = "./dist/pages"` and enables `nodejs_compat`. The compatibility flag is required because the SSR worker imports Node runtime APIs such as `node:async_hooks`.
+
 The `build` script runs the Vinext build, copies the client assets into `dist/pages`, copies the server bundle, and creates `dist/pages/_worker.js` so Cloudflare Pages can serve the SSR portfolio correctly.
 
 ## Included Shape
