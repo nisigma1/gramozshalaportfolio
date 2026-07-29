@@ -1,8 +1,8 @@
-# vinext-starter
+# Gramoz Shala Portfolio
 
-A clean full-stack starter running on
-[vinext](https://github.com/cloudflare/vinext), with optional Cloudflare D1 and
-Drizzle support.
+Premium personal portfolio for Gramoz Shala — Electronics, Automation & Robotics Student.
+
+Live site: https://gramozshala.com
 
 ## Prerequisites
 
@@ -16,7 +16,18 @@ npm run dev
 npm run build
 ```
 
-This starter does not use `wrangler.jsonc`.
+## Cloudflare Pages
+
+Use these settings when connecting the GitHub repo to Cloudflare Pages:
+
+- Framework preset: `None`
+- Production branch: `main`
+- Root directory: `/`
+- Build command: `npm run pages:build`
+- Build output directory: `dist`
+- Environment variable: `NODE_VERSION=22.13.0`
+
+The `pages:build` script runs the Vinext build, copies the client assets to the Pages output root, and creates `dist/_worker.js` so Cloudflare Pages can serve the SSR portfolio correctly.
 
 ## Included Shape
 
