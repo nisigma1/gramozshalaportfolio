@@ -1,4 +1,4 @@
-import { cp, mkdir, stat, writeFile } from "node:fs/promises";
+import { cp, mkdir, rm, stat, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 
 const root = process.cwd();
@@ -7,6 +7,7 @@ const clientDir = join(distDir, "client");
 const pagesDir = join(distDir, "pages");
 const serverEntry = join(distDir, "server", "index.js");
 const workerEntry = join(pagesDir, "_worker.js");
+const generatedWranglerDeployConfig = join(root, ".wrangler", "deploy");
 
 async function exists(path) {
   try {
@@ -48,4 +49,13 @@ await writeFile(
   "utf8",
 );
 
-console.log("Prepared Cloudflare Pages output in dist/pages with _worker.js and static assets.");
+await rm(generatedWranglerDeployConfig, {
+  recursive: true,
+  force: true,
+});
+
+await rm(join(pagesDir, "server", "wrangler.json"), {
+  force: true,
+});
+
+console.log("Prepared Cloudflare Pages output in dist/pages with _worker.js, static assets, and root Pages config.");
