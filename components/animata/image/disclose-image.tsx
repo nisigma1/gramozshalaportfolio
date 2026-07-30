@@ -2,6 +2,7 @@
 
 import {
   type ImgHTMLAttributes,
+  useCallback,
   useEffect,
   useRef,
   useState,
@@ -27,17 +28,38 @@ export default function DiscloseImage({
   ...props
 }: DiscloseImageProps) {
   const [imageLoaded, setImageLoaded] = useState(false);
+  const [revealed, setRevealed] = useState(false);
   const imageRef = useRef<HTMLImageElement>(null);
+  const frameRef = useRef<number | null>(null);
+  const hasStartedRevealRef = useRef(false);
+
+  const startReveal = useCallback(() => {
+    if (hasStartedRevealRef.current) return;
+    hasStartedRevealRef.current = true;
+    setImageLoaded(true);
+
+    frameRef.current = window.requestAnimationFrame(() => {
+      frameRef.current = window.requestAnimationFrame(() => {
+        setRevealed(true);
+      });
+    });
+  }, []);
 
   useEffect(() => {
     const image = imageRef.current;
     if (image?.complete && image.naturalWidth > 0) {
-      setImageLoaded(true);
+      startReveal();
     }
-  }, []);
+
+    return () => {
+      if (frameRef.current) {
+        window.cancelAnimationFrame(frameRef.current);
+      }
+    };
+  }, [startReveal]);
 
   const handleLoad: ImgHTMLAttributes<HTMLImageElement>["onLoad"] = (event) => {
-    setImageLoaded(true);
+    startReveal();
     onLoad?.(event);
   };
 
@@ -47,6 +69,7 @@ export default function DiscloseImage({
         "disclose-image",
         vertical ? "is-vertical" : "is-horizontal",
         imageLoaded && "is-loaded",
+        revealed && "is-revealed",
         wrapperClassName,
       )}
     >

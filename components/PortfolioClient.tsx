@@ -160,6 +160,7 @@ export default function PortfolioClient() {
                   loading="eager"
                   fetchPriority="auto"
                   decoding="async"
+                  wrapperClassName="hero-disclose"
                   doorClassName="hero-disclose-door"
                 />
                 <figcaption>
