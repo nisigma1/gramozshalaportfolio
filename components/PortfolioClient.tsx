@@ -12,6 +12,7 @@ import {
   ImpactMetrics,
   Navigation,
 } from "@/components/PortfolioInteractions";
+import DiscloseImage from "@/components/animata/image/disclose-image";
 import { ParticleTypography } from "@/components/ParticleTypography";
 import { CursorGrid } from "@/components/CursorGrid";
 import { DotGrid } from "@/components/DotGrid";
@@ -151,9 +152,7 @@ export default function PortfolioClient() {
 
             <div className="hero-stage">
               <figure className="hero-portrait">
-                {/* Direct image delivery avoids a runtime optimizer dependency. */}
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
+                <DiscloseImage
                   src="/images/gramoz-shala-clean.jpg"
                   alt="Portrait of Gramoz Shala wearing a black turtleneck"
                   width={1126}
@@ -161,6 +160,7 @@ export default function PortfolioClient() {
                   loading="eager"
                   fetchPriority="auto"
                   decoding="async"
+                  doorClassName="hero-disclose-door"
                 />
                 <figcaption>
                   <span>Electrical & Computer Engineering</span>
