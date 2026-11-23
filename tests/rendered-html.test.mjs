@@ -50,6 +50,7 @@ test("server-renders the complete Gramoz Shala portfolio", async () => {
   assert.match(html, /Visit Malera Studio/);
   assert.match(html, /Web development/);
   assert.match(html, /href="https:\/\/malera\.studio\/"/);
+  assert.match(html, /<footer\b[\s\S]*Designed &amp; developed by[\s\S]*<a href="https:\/\/www\.malera\.studio\/">Malera Studio<\/a>[\s\S]*<\/footer>/);
   assert.match(html, /target="_blank"/);
   assert.match(html, /application\/ld\+json/);
   assert.match(html, /og\.png/);

@@ -1645,6 +1645,27 @@ main,
   font-weight: 700;
 }
 
+.footer-grid > .footer-credit {
+  grid-column: 1 / -1;
+  font-family: inherit;
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+
+.footer-credit a {
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
+  color: var(--text);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+}
+
+.footer-credit a:hover {
+  text-decoration-thickness: 2px;
+}
+
 @media (min-width: 30rem) {
   :root {
     --page-gutter: 1.5rem;

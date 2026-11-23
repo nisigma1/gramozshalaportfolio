@@ -369,6 +369,10 @@ export default function PortfolioClient() {
             <span>Back to top</span>
             <ArrowUp aria-hidden="true" size={17} />
           </a>
+          <p className="footer-credit">
+            Designed &amp; developed by{" "}
+            <a href="https://www.malera.studio/">Malera Studio</a>
+          </p>
         </div>
       </footer>
 
