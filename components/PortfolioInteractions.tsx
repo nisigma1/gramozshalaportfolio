@@ -13,7 +13,8 @@ import {
   Sun,
   X,
 } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { type MouseEvent, useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { portfolio } from "@/data/portfolio";
 
 const navigation = [
@@ -32,17 +33,27 @@ function ThemeToggle({ compact = false }: { compact?: boolean }) {
   const [theme, setTheme] = useState<Theme>("dark");
 
   useEffect(() => {
-    const current =
-      document.documentElement.dataset.theme === "light" ? "light" : "dark";
-    const frame = requestAnimationFrame(() => setTheme(current));
-    return () => cancelAnimationFrame(frame);
+    const syncTheme = () => setTheme(
+      document.documentElement.dataset.theme === "light" ? "light" : "dark",
+    );
+    const frame = requestAnimationFrame(syncTheme);
+    window.addEventListener("portfolio-theme-change", syncTheme);
+    return () => {
+      cancelAnimationFrame(frame);
+      window.removeEventListener("portfolio-theme-change", syncTheme);
+    };
   }, []);
 
   const toggleTheme = () => {
-    const next = theme === "dark" ? "light" : "dark";
+    const next = document.documentElement.dataset.theme === "light" ? "dark" : "light";
     document.documentElement.dataset.theme = next;
-    localStorage.setItem("gramoz-theme", next);
+    try {
+      localStorage.setItem("gramoz-theme", next);
+    } catch {
+      // The theme remains usable when browser storage is unavailable.
+    }
     setTheme(next);
+    window.dispatchEvent(new Event("portfolio-theme-change"));
   };
 
   const label = `Switch to ${theme === "dark" ? "light" : "dark"} theme`;
@@ -73,27 +84,29 @@ export function Navigation() {
   const overlayRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 12);
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-
     const sections = ["home", ...navigation.map((item) => item.id)]
       .map((id) => document.getElementById(id))
       .filter((section): section is HTMLElement => Boolean(section));
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const visible = entries
-          .filter((entry) => entry.isIntersecting)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-        if (visible) setActive(visible.target.id);
-      },
-      { rootMargin: "-24% 0px -64%", threshold: [0, 0.15, 0.5] },
-    );
-
-    sections.forEach((section) => observer.observe(section));
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      if (document.body.style.position === "fixed") return;
+      setScrolled(window.scrollY > 12);
+      const offset = (document.querySelector("header")?.getBoundingClientRect().height ?? 72) + 32;
+      const current = sections.filter((section) => section.getBoundingClientRect().top <= offset).at(-1);
+      const atEnd = window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 4;
+      setActive(atEnd ? "contact" : current?.id ?? "home");
+    };
+    const onScroll = () => {
+      if (!frame) frame = requestAnimationFrame(update);
+    };
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
     return () => {
       window.removeEventListener("scroll", onScroll);
-      observer.disconnect();
+      window.removeEventListener("resize", onScroll);
+      cancelAnimationFrame(frame);
     };
   }, []);
 
@@ -104,9 +117,19 @@ export function Navigation() {
     const opener = openerRef.current;
     const previousOverflow = body.style.overflow;
     const previousPaddingRight = body.style.paddingRight;
+    const scrollY = window.scrollY;
+    const previousPosition = body.style.position;
+    const previousTop = body.style.top;
+    const previousWidth = body.style.width;
     const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
     body.style.overflow = "hidden";
+    body.style.position = "fixed";
+    body.style.top = `-${scrollY}px`;
+    body.style.width = "100%";
     if (scrollbarWidth > 0) body.style.paddingRight = `${scrollbarWidth}px`;
+    const background = Array.from(document.querySelectorAll<HTMLElement>("header, main, .site-footer, .skip-link"))
+      .map((element) => ({ element, inert: element.inert }));
+    background.forEach(({ element }) => { element.inert = true; });
 
     const overlay = overlayRef.current;
     const focusable = overlay
@@ -118,7 +141,10 @@ export function Navigation() {
       : [];
     const first = focusable[0];
     const last = focusable[focusable.length - 1];
-    const frame = requestAnimationFrame(() => first?.focus());
+    const frame = requestAnimationFrame(() => first?.focus({ preventScroll: true }));
+    const desktop = window.matchMedia("(min-width: 80rem)");
+    const onResize = () => { if (desktop.matches) setOpen(false); };
+    desktop.addEventListener("change", onResize);
 
     const onKeyDown = (event: globalThis.KeyboardEvent) => {
       if (event.key === "Escape") {
@@ -141,13 +167,30 @@ export function Navigation() {
     return () => {
       cancelAnimationFrame(frame);
       document.removeEventListener("keydown", onKeyDown);
+      desktop.removeEventListener("change", onResize);
       body.style.overflow = previousOverflow;
       body.style.paddingRight = previousPaddingRight;
-      opener?.focus();
+      body.style.position = previousPosition;
+      body.style.top = previousTop;
+      body.style.width = previousWidth;
+      background.forEach(({ element, inert }) => { element.inert = inert; });
+      window.scrollTo({ top: scrollY, behavior: "instant" });
+      opener?.focus({ preventScroll: true });
     };
   }, [open]);
 
   const closeMenu = () => setOpen(false);
+  const selectSection = (event: MouseEvent<HTMLAnchorElement>) => {
+    event.preventDefault();
+    const hash = event.currentTarget.hash;
+    setOpen(false);
+    requestAnimationFrame(() => {
+      history.replaceState(null, "", hash);
+      document.getElementById(hash.slice(1))?.scrollIntoView({
+        behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth",
+      });
+    });
+  };
 
   return (
     <>
@@ -158,7 +201,7 @@ export function Navigation() {
           </a>
 
           <nav className="desktop-nav" aria-label="Primary navigation">
-            {navigation.map((item) => (
+            {navigation.filter((item) => item.id !== "contact").map((item) => (
               <a
                 key={item.id}
                 href={`#${item.id}`}
@@ -172,7 +215,7 @@ export function Navigation() {
 
           <div className="header-actions">
             <ThemeToggle compact />
-            <a className="header-contact" href="#contact">
+            <a className="header-contact" href="#contact" aria-current={active === "contact" ? "location" : undefined}>
               Contact
               <ArrowDownRight aria-hidden="true" size={16} />
             </a>
@@ -183,6 +226,10 @@ export function Navigation() {
               aria-expanded={open}
               aria-controls="mobile-menu"
               aria-label="Open navigation menu"
+              onPointerDown={(event) => {
+                event.preventDefault();
+                event.currentTarget.focus({ preventScroll: true });
+              }}
               onClick={() => setOpen(true)}
             >
               <Menu aria-hidden="true" size={20} />
@@ -191,7 +238,7 @@ export function Navigation() {
         </div>
       </header>
 
-      {open && (
+      {open && createPortal(
         <div
           ref={overlayRef}
           className="mobile-menu"
@@ -202,7 +249,7 @@ export function Navigation() {
         >
           <div className="mobile-menu-shell">
             <div className="mobile-menu-header">
-              <a className="brand" href="#home" onClick={closeMenu}>
+              <a className="brand" href="#home" onClick={selectSection}>
                 <span className="brand-name">Gramoz Shala</span>
               </a>
               <button
@@ -222,7 +269,7 @@ export function Navigation() {
                   href={`#${item.id}`}
                   className={active === item.id ? "is-active" : undefined}
                   aria-current={active === item.id ? "location" : undefined}
-                  onClick={closeMenu}
+                  onClick={selectSection}
                 >
                   <strong>{item.label}</strong>
                   <ArrowRight aria-hidden="true" size={18} />
@@ -245,7 +292,7 @@ export function Navigation() {
               </a>
             </div>
           </div>
-        </div>
+        </div>, document.body
       )}
     </>
   );
@@ -272,7 +319,7 @@ export function ExperienceTimeline() {
               type="button"
               aria-expanded={isOpen}
               aria-controls={panelId}
-              onClick={() => setOpenIndex(index)}
+              onClick={() => setOpenIndex(isOpen ? -1 : index)}
             >
               <span className="experience-meta">
                 <time>{item.period}</time>
@@ -291,6 +338,7 @@ export function ExperienceTimeline() {
               role="region"
               aria-labelledby={buttonId}
               aria-hidden={!isOpen}
+              inert={!isOpen}
             >
               <div className="experience-panel-inner">
                 <div className="experience-description">
@@ -430,6 +478,7 @@ export function CertificationArchive() {
               role="region"
               aria-labelledby={buttonId}
               aria-hidden={!isOpen}
+              inert={!isOpen}
             >
               <div className="certification-panel-inner">
                 <dl>
