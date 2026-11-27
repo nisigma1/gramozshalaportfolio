@@ -82,20 +82,18 @@ export default function DiscloseImage({
         {...props}
         className={classNames("disclose-image-media", className)}
       />
-      <span
-        className={classNames(
-          "disclose-door disclose-door-start",
-          doorClassName,
-        )}
-        aria-hidden="true"
-      />
-      <span
-        className={classNames(
-          "disclose-door disclose-door-end",
-          doorClassName,
-        )}
-        aria-hidden="true"
-      />
+      {imageLoaded && (
+        <>
+          <span
+            className={classNames("disclose-door disclose-door-start", doorClassName)}
+            aria-hidden="true"
+          />
+          <span
+            className={classNames("disclose-door disclose-door-end", doorClassName)}
+            aria-hidden="true"
+          />
+        </>
+      )}
     </div>
   );
 }

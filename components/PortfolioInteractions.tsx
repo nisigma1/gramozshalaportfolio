@@ -13,7 +13,7 @@ import {
   Sun,
   X,
 } from "lucide-react";
-import { type MouseEvent, useEffect, useRef, useState } from "react";
+import { type MouseEvent, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { portfolio } from "@/data/portfolio";
 
@@ -28,6 +28,31 @@ const navigation = [
 ] as const;
 
 type Theme = "dark" | "light";
+
+function navigateToSection(hash: string) {
+  const target = document.getElementById(hash.slice(1));
+  if (!target) return;
+  // A fragment is a scroll action, not a new server-component route.
+  // Use the native History method so the router does not replace the page.
+  if (location.hash !== hash) History.prototype.pushState.call(window.history, null, "", hash);
+  target.scrollIntoView({
+    behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth",
+  });
+}
+
+export function SkipLink() {
+  return (
+    <a className="skip-link" href="#main-content" onClick={(event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      const main = document.getElementById("main-content");
+      main?.focus({ preventScroll: true });
+      main?.scrollIntoView({ block: "start" });
+    }}>
+      Skip to content
+    </a>
+  );
+}
 
 function ThemeToggle({ compact = false }: { compact?: boolean }) {
   const [theme, setTheme] = useState<Theme>("dark");
@@ -82,6 +107,7 @@ export function Navigation() {
   const [scrolled, setScrolled] = useState(false);
   const openerRef = useRef<HTMLButtonElement>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
+  const pendingHashRef = useRef<string | null>(null);
 
   useEffect(() => {
     const sections = ["home", ...navigation.map((item) => item.id)]
@@ -103,14 +129,25 @@ export function Navigation() {
     update();
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onScroll);
+    const onAnchorClick = (event: globalThis.MouseEvent) => {
+      if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+      const anchor = event.target instanceof Element ? event.target.closest<HTMLAnchorElement>('a[href^="#"]') : null;
+      if (!anchor || anchor.closest(".mobile-menu") || anchor.classList.contains("skip-link")) return;
+      if (!document.getElementById(anchor.hash.slice(1))) return;
+      event.preventDefault();
+      event.stopPropagation();
+      navigateToSection(anchor.hash);
+    };
+    document.addEventListener("click", onAnchorClick, true);
     return () => {
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onScroll);
+      document.removeEventListener("click", onAnchorClick, true);
       cancelAnimationFrame(frame);
     };
   }, []);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!open) return;
 
     const body = document.body;
@@ -176,20 +213,20 @@ export function Navigation() {
       background.forEach(({ element, inert }) => { element.inert = inert; });
       window.scrollTo({ top: scrollY, behavior: "instant" });
       opener?.focus({ preventScroll: true });
+      const hash = pendingHashRef.current;
+      pendingHashRef.current = null;
+      if (hash) {
+        navigateToSection(hash);
+      }
     };
   }, [open]);
 
   const closeMenu = () => setOpen(false);
   const selectSection = (event: MouseEvent<HTMLAnchorElement>) => {
     event.preventDefault();
-    const hash = event.currentTarget.hash;
+    event.stopPropagation();
+    pendingHashRef.current = event.currentTarget.hash;
     setOpen(false);
-    requestAnimationFrame(() => {
-      history.replaceState(null, "", hash);
-      document.getElementById(hash.slice(1))?.scrollIntoView({
-        behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth",
-      });
-    });
   };
 
   return (
@@ -226,7 +263,7 @@ export function Navigation() {
               aria-expanded={open}
               aria-controls="mobile-menu"
               aria-label="Open navigation menu"
-              onPointerDown={(event) => {
+              onMouseDown={(event) => {
                 event.preventDefault();
                 event.currentTarget.focus({ preventScroll: true });
               }}
@@ -511,14 +548,24 @@ async function copyText(value: string) {
   }
 
   const input = document.createElement("textarea");
+  const previousFocus = document.activeElement;
+  const scrollY = window.scrollY;
   input.value = value;
   input.setAttribute("readonly", "");
   input.style.position = "fixed";
   input.style.opacity = "0";
+  input.style.fontSize = "16px";
   document.body.appendChild(input);
-  input.select();
-  document.execCommand("copy");
-  input.remove();
+  try {
+    input.focus({ preventScroll: true });
+    input.select();
+    input.setSelectionRange(0, value.length);
+    if (!document.execCommand("copy")) throw new Error("Copy was not permitted");
+  } finally {
+    input.remove();
+    if (previousFocus instanceof HTMLElement) previousFocus.focus({ preventScroll: true });
+    window.scrollTo({ top: scrollY, behavior: "instant" });
+  }
 }
 
 export function ContactMethod({
@@ -533,6 +580,7 @@ export function ContactMethod({
   external?: boolean;
 }) {
   const [copied, setCopied] = useState(false);
+  const [copyFailed, setCopyFailed] = useState(false);
   const timerRef = useRef<number | null>(null);
   const Icon = type === "Email" ? Mail : Phone;
 
@@ -544,6 +592,7 @@ export function ContactMethod({
   );
 
   const copy = async () => {
+    setCopyFailed(false);
     try {
       await copyText(value);
       setCopied(true);
@@ -551,6 +600,7 @@ export function ContactMethod({
       timerRef.current = window.setTimeout(() => setCopied(false), 2200);
     } catch {
       setCopied(false);
+      setCopyFailed(true);
     }
   };
 
@@ -584,6 +634,11 @@ export function ContactMethod({
       <span className="sr-only" aria-live="polite">
         {copied ? `${type} copied` : ""}
       </span>
+      {copyFailed && (
+        <p className="copy-feedback" role="status">
+          Couldn’t copy. Touch and hold the {type.toLowerCase()} above to copy it.
+        </p>
+      )}
     </article>
   );
 }

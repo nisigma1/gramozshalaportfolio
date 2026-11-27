@@ -75,7 +75,8 @@ test("keeps portfolio content typed and accessibility safeguards in source", asy
   assert.match(page, /<PortfolioClient \/>/);
   assert.match(layout, /metadataBase/);
   assert.match(layout, /localStorage\.getItem\("gramoz-theme"\)/);
-  assert.match(client, /className="skip-link"/);
+  assert.match(client, /<SkipLink \/>/);
+  assert.match(interactions, /className="skip-link"/);
   assert.doesNotMatch(client, /"use client"/);
   assert.match(interactions, /aria-modal="true"/);
   assert.match(interactions, /aria-expanded=\{isOpen\}/);

@@ -11,6 +11,7 @@ import {
   ExperienceTimeline,
   ImpactMetrics,
   Navigation,
+  SkipLink,
 } from "@/components/PortfolioInteractions";
 import DiscloseImage from "@/components/animata/image/disclose-image";
 import { ParticleTypography } from "@/components/ParticleTypography";
@@ -97,7 +98,6 @@ function MaleraSection() {
                 <li key={service}>
                   <span aria-hidden="true">0{index + 1}</span>
                   <strong>{service}</strong>
-                  <ArrowRight aria-hidden="true" size={16} strokeWidth={1.7} />
                 </li>
               ))}
             </ul>
@@ -129,15 +129,13 @@ export default function PortfolioClient() {
 
   return (
     <>
-      <a className="skip-link" href="#main-content">
-        Skip to content
-      </a>
+      <SkipLink />
       <Navigation />
       <div className="site-dot-grid" aria-hidden="true">
         <DotGrid dotSize={4} gap={28} proximity={150} />
       </div>
 
-      <main id="main-content">
+      <main id="main-content" tabIndex={-1}>
         <section className="hero" id="home" aria-labelledby="hero-name">
           <div className="page-shell hero-composition">
             <div className="hero-overline">

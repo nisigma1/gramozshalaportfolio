@@ -260,6 +260,7 @@ ul {
 .brand {
   display: inline-flex;
   align-items: center;
+  min-height: 2.75rem;
   gap: 0.75rem;
   width: max-content;
   font-weight: 720;
@@ -1297,7 +1298,7 @@ main,
 .malera-services ul { margin: 0; padding: 0; list-style: none; }
 .malera-services li {
   display: grid;
-  grid-template-columns: 2rem minmax(0, 1fr) auto;
+  grid-template-columns: 2rem minmax(0, 1fr);
   align-items: center;
   gap: 0.9rem;
   min-height: 3.6rem;
@@ -1309,8 +1310,6 @@ main,
   font-size: 0.7rem;
 }
 .malera-services li strong { font-size: 1rem; font-weight: 600; }
-.malera-services li svg { color: var(--accent); transition: transform 160ms ease; }
-.malera-services li:hover svg { transform: translateX(0.2rem); }
 
 @media (max-width: 29.99rem) {
   .malera-section { padding-block: 4rem; }
@@ -1318,7 +1317,7 @@ main,
   .malera-copy h2 { font-size: 2.45rem; }
   .malera-description { margin-block: 1.35rem 1.6rem; font-size: 1rem; }
   .particle-type { height: 8.25rem; }
-  .malera-services li { grid-template-columns: 1.6rem minmax(0, 1fr) auto; gap: 0.55rem; }
+  .malera-services li { grid-template-columns: 1.6rem minmax(0, 1fr); gap: 0.55rem; }
   .malera-services li strong { font-size: 0.92rem; }
   .malera-signal-stage {
     min-height: 11.75rem;
@@ -1578,6 +1577,9 @@ main,
 }
 
 .contact-method > a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
   width: fit-content;
   max-width: 100%;
   font-size: 1.15rem;
@@ -1605,6 +1607,12 @@ main,
   border-color: var(--line-strong);
   background: var(--surface);
   color: var(--text);
+}
+
+.copy-feedback {
+  color: var(--muted);
+  font-size: 0.875rem;
+  line-height: 1.5;
 }
 
 .site-footer {
@@ -1737,7 +1745,6 @@ main,
   }
 
   .about-grid,
-  .section-intro,
   .languages-grid {
     grid-template-columns: minmax(0, 1.2fr) minmax(16rem, 0.8fr);
     column-gap: 3rem;
