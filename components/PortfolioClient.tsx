@@ -203,6 +203,7 @@ export default function PortfolioClient() {
               <div className="about-copy">
                 <p>{portfolio.about.intro}</p>
                 <p>{portfolio.about.perspective}</p>
+                <p>{portfolio.about.contribution}</p>
               </div>
             </div>
           </div>

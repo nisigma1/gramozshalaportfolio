@@ -35,6 +35,7 @@ test("server-renders the complete Gramoz Shala portfolio", async () => {
   );
   assert.match(html, /<h1[^>]*>[\s\S]*Gramoz[\s\S]*Shala[\s\S]*<\/h1>/);
   assert.match(html, /Engineering ideas into systems that work\./);
+  assert.match(html, /I contribute ideas for new features across apps, games, websites, and automation projects, helping teams shape and improve their products\./);
   assert.match(html, /Student Initiative for Innovation/);
   assert.match(html, /ELKOS GROUP/);
   assert.doesNotMatch(html, /ELKOS ETC/);

@@ -51,6 +51,8 @@ export const portfolio = {
       "From the way sensors collect information to how processors interpret it, I want to understand how complete technical systems work—not only their individual parts.",
     perspective:
       "Volunteering, entrepreneurship, communication, and event organization complement my technical education with a practical, people-focused perspective.",
+    contribution:
+      "I contribute ideas for new features across apps, games, websites, and automation projects, helping teams shape and improve their products.",
   },
   focusAreas: [
     {
